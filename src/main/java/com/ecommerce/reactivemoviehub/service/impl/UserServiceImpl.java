@@ -3,7 +3,6 @@ package com.ecommerce.reactivemoviehub.service.impl;
 import com.ecommerce.reactivemoviehub.dto.request.user.UserRequestDto;
 import com.ecommerce.reactivemoviehub.dto.request.user.UserUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.UserResponseDto;
-import com.ecommerce.reactivemoviehub.entity.User;
 import com.ecommerce.reactivemoviehub.mapper.UserMapper;
 import com.ecommerce.reactivemoviehub.repository.UserRepo;
 import com.ecommerce.reactivemoviehub.service.UserService;
