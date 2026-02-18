@@ -11,11 +11,11 @@ import java.util.List;
 public interface UserService {
     Mono<UserResponseDto> createUser(UserRequestDto userRequestDto);
 
-    Mono<UserResponseDto> updateUser(UserUpdateDto userUpdateDto);
+    Mono<UserResponseDto> updateUser(UserUpdateDto userUpdateDto,String id);
 
-    Mono<UserResponseDto> getUserById(Long id);
+    Mono<UserResponseDto> getUserById(String id);
 
-    Mono<Void> deleteUserById(Long id);
+    Mono<Void> deleteUserById(String id);
 
     Flux<UserResponseDto> getAllUsers();
 }

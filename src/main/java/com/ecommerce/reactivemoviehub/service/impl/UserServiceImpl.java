@@ -3,6 +3,7 @@ package com.ecommerce.reactivemoviehub.service.impl;
 import com.ecommerce.reactivemoviehub.dto.request.user.UserRequestDto;
 import com.ecommerce.reactivemoviehub.dto.request.user.UserUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.UserResponseDto;
+import com.ecommerce.reactivemoviehub.entity.User;
 import com.ecommerce.reactivemoviehub.mapper.UserMapper;
 import com.ecommerce.reactivemoviehub.repository.UserRepo;
 import com.ecommerce.reactivemoviehub.service.UserService;
@@ -29,22 +30,46 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<UserResponseDto> updateUser(UserUpdateDto userUpdateDto) {
-        return null;
+    public Mono<UserResponseDto> updateUser(UserUpdateDto userUpdateDto, String id) {
+        return userRepo.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("User already exists")))
+                .flatMap(user -> {
+                    if (userUpdateDto.getEmail() != null) {
+                        return userRepo.existsByEmailAndIdNot(userUpdateDto.getEmail(), id)
+                                .flatMap(exists -> {
+                                    if (exists) {
+                                        return Mono.error(new RuntimeException("Email already exists"));
+                                    }
+
+                                    userMapper.updateUser(user, userUpdateDto);
+                                    return userRepo.save(user);
+                                });
+                    }
+
+                    userMapper.updateUser(user, userUpdateDto);
+                    return userRepo.save(user);
+                })
+                .map(userMapper::toUserResponseDto);
+
     }
 
     @Override
-    public Mono<UserResponseDto> getUserById(Long id) {
-        return null;
+    public Mono<UserResponseDto> getUserById(String id) {
+        return userRepo.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("User not found")))
+                .map(userMapper::toUserResponseDto);
     }
 
     @Override
-    public Mono<Void> deleteUserById(Long id) {
-        return null;
+    public Mono<Void> deleteUserById(String id) {
+        return userRepo.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("User not found")))
+                .flatMap(userRepo::delete);
     }
 
     @Override
     public Flux<UserResponseDto> getAllUsers() {
-        return null;
+        return userRepo.findAll()
+                .map(userMapper::toUserResponseDto);
     }
 }
