@@ -23,4 +23,7 @@ public class ReviewRequestDto {
 
     @NotEmpty(message = "UserId is required")
     private String userId;
+
+    @NotEmpty(message = "movieId is required")
+    private String movieId;
 }

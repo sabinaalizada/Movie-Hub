@@ -8,6 +8,7 @@ import com.ecommerce.reactivemoviehub.repository.UserRepo;
 import com.ecommerce.reactivemoviehub.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
                 .map(userMapper::toUserResponseDto);
     }
 
+    @Transactional
     @Override
     public Mono<UserResponseDto> updateUser(UserUpdateDto userUpdateDto, String id) {
         return userRepo.findById(id)
@@ -59,6 +61,7 @@ public class UserServiceImpl implements UserService {
                 .map(userMapper::toUserResponseDto);
     }
 
+    @Transactional
     @Override
     public Mono<Void> deleteUserById(String id) {
         return userRepo.findById(id)
