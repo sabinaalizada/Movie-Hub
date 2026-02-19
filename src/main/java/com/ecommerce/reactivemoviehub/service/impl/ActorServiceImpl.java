@@ -36,6 +36,8 @@ public class ActorServiceImpl implements ActorService {
                     actorMapper.updateActor(actor, actorUpdateDto);
                     return actorRepo.save(actor);
                 })
+                .onErrorMap(DuplicateKeyException.class,
+                        error -> new RuntimeException(error.getMessage()))
                 .map(actorMapper::toResponseDto);
     }
 

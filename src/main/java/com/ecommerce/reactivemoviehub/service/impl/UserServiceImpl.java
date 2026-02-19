@@ -23,7 +23,9 @@ public class UserServiceImpl implements UserService {
     public Mono<UserResponseDto> createUser(UserRequestDto userRequestDto) {
         return userRepo.existsByEmail(userRequestDto.getEmail())
                 .filter(exists -> !exists)
-                .switchIfEmpty(Mono.error(new RuntimeException("User already exists")))
+                .switchIfEmpty(Mono.error(
+                        new RuntimeException("User already exists")
+                ))
                 .map(exist -> userMapper.toUser(userRequestDto))
                 .flatMap(userRepo::save)
                 .map(userMapper::toUserResponseDto);
