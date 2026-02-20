@@ -2,6 +2,7 @@ package com.ecommerce.reactivemoviehub.controller;
 
 
 import com.ecommerce.reactivemoviehub.dto.request.movie.MovieRequestDto;
+import com.ecommerce.reactivemoviehub.dto.response.ActorResponseDto;
 import com.ecommerce.reactivemoviehub.dto.response.MovieResponseDto;
 import com.ecommerce.reactivemoviehub.service.MovieService;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -40,4 +42,57 @@ public class MovieController {
                                 .body(result));
 
     }
+
+    @GetMapping("/{id}")
+    public Mono<ResponseEntity<MovieResponseDto>> getMovieById(
+            @PathVariable String id) {
+        return movieService.getMovie(id)
+                .map(result ->
+                        ResponseEntity
+                                .status(HttpStatus.OK)
+                                .body(result));
+
+    }
+
+    @GetMapping
+    public Flux<ResponseEntity<MovieResponseDto>> getAllMovies() {
+        return movieService.getAllMovies()
+                .map(result ->
+                        ResponseEntity
+                                .status(HttpStatus.OK)
+                                .body(result));
+
+    }
+
+    @GetMapping("/{id}/actors")
+    public Flux<ResponseEntity<ActorResponseDto>> getMovieActors(
+            @PathVariable String id) {
+        return movieService.getMovieActors(id)
+                .map(result ->
+                        ResponseEntity
+                                .status(HttpStatus.OK)
+                                .body(result));
+
+    }
+
+    @GetMapping("/{id}/reviews")
+    public Flux<ResponseEntity<ActorResponseDto>> getMovieReviews(
+            @PathVariable String id) {
+        return movieService.getMovieReviews(id)
+                .map(result ->
+                        ResponseEntity
+                                .status(HttpStatus.OK)
+                                .body(result));
+
+    }
+
+    @DeleteMapping("/{id}")
+    public Mono<ResponseEntity<Void>> deleteMovie(
+            @PathVariable String id) {
+        return movieService.deleteMovie(id)
+                .then(Mono.just(ResponseEntity.noContent().build()));
+
+    }
+
+
 }

@@ -11,7 +11,7 @@ public interface MovieService {
 
     Mono<MovieResponseDto> updateMovie(MovieRequestDto movieRequestDto, String id);
 
-    void deleteMovie(String id);
+    Mono<Void> deleteMovie(String id);
 
     Mono<MovieResponseDto> getMovie(String id);
 
