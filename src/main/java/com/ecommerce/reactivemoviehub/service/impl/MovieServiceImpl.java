@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class MovieServiceImpl implements MovieService {
@@ -22,7 +25,6 @@ public class MovieServiceImpl implements MovieService {
     private final MovieRepo movieRepo;
     private final MovieMapper movieMapper;
     private final ActorRepo actorRepo;
-    private final ActorMapper actorMapper;
 
     @Override
     public Mono<MovieResponseDto> createMovie(MovieRequestDto movieRequestDto) {
@@ -35,26 +37,23 @@ public class MovieServiceImpl implements MovieService {
                 )
                 .collectList()
                 .flatMap(actors -> {
-                    Movie movie = movieMapper.toMovie(movieRequestDto);
-                    movie.setActorId(
-                            actors.stream()
-                                    .map(Actor::getId)
-                                    .toList()
-                    );
 
+                    Set<String> actorIds = new HashSet<>();
+                    boolean hasDup = actors.stream()
+                            .map(Actor::getId)
+                            .anyMatch(id -> !actorIds.add(id));
+
+                    if (hasDup) {
+                        return Mono.error(
+                                new RuntimeException("Duplicate actors found"));
+                    }
+
+                    Movie movie = movieMapper.toMovie(movieRequestDto, actors);
                     return movieRepo.save(movie)
-                            .map(m -> {
-                                        MovieResponseDto movieResponseDto = movieMapper.toMovieResponseDto(m);
-                                        movieResponseDto.setActors(actors
-                                                .stream()
-                                                .map(actorMapper::toResponseDto)
-                                                .toList()
-                                        );
-                                        return movieResponseDto;
-                                    }
-
-                            );
+                            .map(m ->
+                                    movieMapper.toMovieResponseDto(m, actors));
                 });
+
 
     }
 
@@ -75,9 +74,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Flux<MovieResponseDto> getAllMovies() {
-        return movieRepo
-                .findAll()
-                .map(movieMapper::toMovieResponseDto);
+        return null;
     }
 
     @Override

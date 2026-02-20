@@ -3,16 +3,29 @@ package com.ecommerce.reactivemoviehub.mapper;
 import com.ecommerce.reactivemoviehub.dto.request.movie.MovieRequestDto;
 import com.ecommerce.reactivemoviehub.dto.request.movie.MovieUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.MovieResponseDto;
+import com.ecommerce.reactivemoviehub.entity.Actor;
 import com.ecommerce.reactivemoviehub.entity.Movie;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+import java.util.List;
+
+@Mapper(componentModel = "spring", uses = {ActorMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface MovieMapper {
-    MovieResponseDto toMovieResponseDto(Movie movie);
 
+    @Mapping(target = "actors", source = "actors")
+    MovieResponseDto toMovieResponseDto(Movie movie, List<Actor> actors);
 
-    Movie toMovie(MovieRequestDto movieRequestDto);
+    @Mapping(target = "actorId", source = "actors", qualifiedByName = "mapActorsToIds")
+    Movie toMovie(MovieRequestDto movieRequestDto, List<Actor> actors);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateMovieRequestDto(MovieUpdateDto movieUpdateDto, @MappingTarget Movie movie);
+
+
+    @Named("mapActorsToIds")
+    default List<String> mapToActorsIds(List<Actor> actors) {
+        return actors.stream()
+                .map(Actor::getId)
+                .toList();
+    }
 }
