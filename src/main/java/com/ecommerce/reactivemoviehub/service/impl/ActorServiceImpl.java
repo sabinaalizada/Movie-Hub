@@ -24,7 +24,8 @@ public class ActorServiceImpl implements ActorService {
                 .map(actorMapper::toActor)
                 .flatMap(actorRepo::save)
                 .onErrorMap(DuplicateKeyException.class,
-                        error -> new RuntimeException(error.getMessage()))
+                        error ->
+                                new RuntimeException(error.getMessage()))
                 .map(actorMapper::toResponseDto);
     }
 
@@ -37,21 +38,24 @@ public class ActorServiceImpl implements ActorService {
                     return actorRepo.save(actor);
                 })
                 .onErrorMap(DuplicateKeyException.class,
-                        error -> new RuntimeException(error.getMessage()))
+                        error ->
+                                new RuntimeException(error.getMessage()))
                 .map(actorMapper::toResponseDto);
     }
 
     @Override
     public Mono<Void> deleteActor(String actorId) {
         return actorRepo.findById(actorId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Actor doesn't exist")))
+                .switchIfEmpty(Mono.error
+                        (new RuntimeException("Actor doesn't exist")))
                 .flatMap(actorRepo::delete);
     }
 
     @Override
     public Mono<ActorResponseDto> getActor(String actorId) {
         return actorRepo.findById(actorId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Actor doesn't exist")))
+                .switchIfEmpty(Mono.error
+                        (new RuntimeException("Actor doesn't exist")))
                 .map(actorMapper::toResponseDto);
     }
 

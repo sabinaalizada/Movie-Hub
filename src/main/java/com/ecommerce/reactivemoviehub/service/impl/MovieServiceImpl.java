@@ -3,6 +3,9 @@ package com.ecommerce.reactivemoviehub.service.impl;
 import com.ecommerce.reactivemoviehub.dto.request.movie.MovieRequestDto;
 import com.ecommerce.reactivemoviehub.dto.response.ActorResponseDto;
 import com.ecommerce.reactivemoviehub.dto.response.MovieResponseDto;
+import com.ecommerce.reactivemoviehub.entity.Actor;
+import com.ecommerce.reactivemoviehub.entity.Movie;
+import com.ecommerce.reactivemoviehub.mapper.ActorMapper;
 import com.ecommerce.reactivemoviehub.mapper.MovieMapper;
 import com.ecommerce.reactivemoviehub.repository.ActorRepo;
 import com.ecommerce.reactivemoviehub.repository.MovieRepo;
@@ -19,14 +22,39 @@ public class MovieServiceImpl implements MovieService {
     private final MovieRepo movieRepo;
     private final MovieMapper movieMapper;
     private final ActorRepo actorRepo;
+    private final ActorMapper actorMapper;
 
     @Override
     public Mono<MovieResponseDto> createMovie(MovieRequestDto movieRequestDto) {
         return Flux.fromIterable(movieRequestDto.getActorsId())
-                .flatMap(actorId->actorRepo.findById(actorId))
-                .switchIfEmpty(Mono.error(
-                        new RuntimeException("User already exists")
-                ))
+                .flatMap(actorId ->
+                        actorRepo.findById(actorId)
+                                .switchIfEmpty(Mono.error(
+                                        new RuntimeException("Actor not found")
+                                ))
+                )
+                .collectList()
+                .flatMap(actors -> {
+                    Movie movie = movieMapper.toMovie(movieRequestDto);
+                    movie.setActorId(
+                            actors.stream()
+                                    .map(Actor::getId)
+                                    .toList()
+                    );
+
+                    return movieRepo.save(movie)
+                            .map(m -> {
+                                        MovieResponseDto movieResponseDto = movieMapper.toMovieResponseDto(m);
+                                        movieResponseDto.setActors(actors
+                                                .stream()
+                                                .map(actorMapper::toResponseDto)
+                                                .toList()
+                                        );
+                                        return movieResponseDto;
+                                    }
+
+                            );
+                });
 
     }
 
@@ -47,7 +75,9 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Flux<MovieResponseDto> getAllMovies() {
-        return null;
+        return movieRepo
+                .findAll()
+                .map(movieMapper::toMovieResponseDto);
     }
 
     @Override

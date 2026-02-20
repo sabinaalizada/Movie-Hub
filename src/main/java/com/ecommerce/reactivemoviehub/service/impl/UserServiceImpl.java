@@ -35,13 +35,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<UserResponseDto> updateUser(UserUpdateDto userUpdateDto, String id) {
         return userRepo.findById(id)
-                .switchIfEmpty(Mono.error(new RuntimeException("User already exists")))
+                .switchIfEmpty(Mono.error(
+                        new RuntimeException("User already exists")))
                 .flatMap(user -> {
                     if (userUpdateDto.getEmail() != null) {
                         return userRepo.existsByEmailAndIdNot(userUpdateDto.getEmail(), id)
                                 .flatMap(exists -> {
                                     if (exists) {
-                                        return Mono.error(new RuntimeException("Email already exists"));
+                                        return Mono.error(
+                                                new RuntimeException("Email already exists"));
                                     }
 
                                     userMapper.updateUser(user, userUpdateDto);
@@ -59,7 +61,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<UserResponseDto> getUserById(String id) {
         return userRepo.findById(id)
-                .switchIfEmpty(Mono.error(new RuntimeException("User not found")))
+                .switchIfEmpty(Mono.error(
+                        new RuntimeException("User not found")))
                 .map(userMapper::toUserResponseDto);
     }
 
@@ -67,7 +70,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<Void> deleteUserById(String id) {
         return userRepo.findById(id)
-                .switchIfEmpty(Mono.error(new RuntimeException("User not found")))
+                .switchIfEmpty(Mono.error(
+                        new RuntimeException("User not found")))
                 .flatMap(userRepo::delete);
     }
 
