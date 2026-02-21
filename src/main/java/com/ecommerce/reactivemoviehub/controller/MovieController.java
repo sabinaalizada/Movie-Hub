@@ -2,6 +2,7 @@ package com.ecommerce.reactivemoviehub.controller;
 
 
 import com.ecommerce.reactivemoviehub.dto.request.movie.MovieRequestDto;
+import com.ecommerce.reactivemoviehub.dto.request.movie.MovieUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.ActorResponseDto;
 import com.ecommerce.reactivemoviehub.dto.response.MovieResponseDto;
 import com.ecommerce.reactivemoviehub.service.MovieService;
@@ -33,9 +34,9 @@ public class MovieController {
 
     @PatchMapping("/{id}")
     public Mono<ResponseEntity<MovieResponseDto>> updateMovie(
-            @Valid @RequestBody MovieRequestDto movieRequestDto,
+            @Valid @RequestBody MovieUpdateDto movieUpdateDto,
             @PathVariable String id) {
-        return movieService.updateMovie(movieRequestDto, id)
+        return movieService.updateMovie(movieUpdateDto, id)
                 .map(result ->
                         ResponseEntity
                                 .status(HttpStatus.OK)

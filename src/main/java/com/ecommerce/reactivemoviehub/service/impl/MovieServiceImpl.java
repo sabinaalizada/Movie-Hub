@@ -1,6 +1,7 @@
 package com.ecommerce.reactivemoviehub.service.impl;
 
 import com.ecommerce.reactivemoviehub.dto.request.movie.MovieRequestDto;
+import com.ecommerce.reactivemoviehub.dto.request.movie.MovieUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.ActorResponseDto;
 import com.ecommerce.reactivemoviehub.dto.response.MovieResponseDto;
 import com.ecommerce.reactivemoviehub.entity.Actor;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 
 
 @Service
@@ -59,17 +61,31 @@ public class MovieServiceImpl implements MovieService {
     }
 //Not ready
     @Override
-    public Mono<MovieResponseDto> updateMovie(MovieRequestDto movieRequestDto, String id) {
+    public Mono<MovieResponseDto> updateMovie(MovieUpdateDto movieUpdateDto, String id) {
         return movieRepo.findById(id)
                 .switchIfEmpty(Mono.error(
                         new RuntimeException("Movie not found")))
-                .flatMap(movie -> {
-                    Flux.fromIterable(movieRequestDto.getActorsId())
-                            .flatMap(actorId ->
-                                    actorRepo.findById(actorId)
-                                            .switchIfEmpty(Mono.error(
-                                                    new RuntimeException("Actor not found")
-                                            ));
+                .flatMap(existingMovie->{
+                    movieMapper.updateMovie(movieUpdateDto,existingMovie);
+
+                    Mono<List<Actor>> actors;
+                    if(movieUpdateDto.getActorId()!=null) {
+                        actors=Flux.fromIterable(movieUpdateDto.getActorId())
+                                .flatMap(actorRepo::findById)
+                                .switchIfEmpty(Mono.error(
+                                        new RuntimeException("Actor not found")
+                                ))
+                                .collectList();
+                    }else {
+
+                        actors= Flux.fromIterable(existingMovie.getActorId())
+                                .flatMap(actorRepo::findById)
+                                .collectList();
+                    }
+                    return actors
+                            .flatMap(response->
+                                    movieRepo.save(existingMovie)
+                            .map(movie -> movieMapper.toMovieResponseDto(movie,response)));
                 });
     }
 

@@ -19,7 +19,7 @@ public interface MovieMapper {
     Movie toMovie(MovieRequestDto movieRequestDto, List<Actor> actors);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateMovieRequestDto(MovieUpdateDto movieUpdateDto, @MappingTarget Movie movie);
+    void updateMovie(MovieUpdateDto movieUpdateDto, @MappingTarget Movie movie);
 
 
     @Named("mapActorsToIds")
