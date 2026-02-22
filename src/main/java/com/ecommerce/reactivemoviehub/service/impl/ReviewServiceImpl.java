@@ -1,24 +1,18 @@
 package com.ecommerce.reactivemoviehub.service.impl;
 
-import com.ecommerce.reactivemoviehub.dto.request.movie.MovieUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.request.review.ReviewRequestDto;
 import com.ecommerce.reactivemoviehub.dto.request.review.ReviewUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.ReviewResponseDto;
-import com.ecommerce.reactivemoviehub.entity.Movie;
-import com.ecommerce.reactivemoviehub.entity.Review;
-import com.ecommerce.reactivemoviehub.entity.User;
 import com.ecommerce.reactivemoviehub.mapper.ReviewMapper;
-import com.ecommerce.reactivemoviehub.repository.ActorRepo;
 import com.ecommerce.reactivemoviehub.repository.MovieRepo;
 import com.ecommerce.reactivemoviehub.repository.ReviewRepo;
 import com.ecommerce.reactivemoviehub.repository.UserRepo;
 import com.ecommerce.reactivemoviehub.service.ReviewService;
-import com.mongodb.DuplicateKeyException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +35,8 @@ public class ReviewServiceImpl implements ReviewService {
                 )
                 .flatMap(tuple ->
                         reviewRepo.save(
-                                reviewMapper.toReview(reviewRequestDto)))
+                                reviewMapper.toReview(reviewRequestDto))
+                )
                 .map(reviewMapper::toResponseDto);
     }
 
@@ -66,7 +61,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Mono<List<ReviewResponseDto>> getAllReviewsByUserId(String userId) {
+    public Flux<ReviewResponseDto> getAllReviewsByUserId(String userId) {
         return null;
     }
 }

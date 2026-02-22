@@ -94,6 +94,4 @@ public class MovieController {
                 .then(Mono.just(ResponseEntity.noContent().build()));
 
     }
-
-
 }
