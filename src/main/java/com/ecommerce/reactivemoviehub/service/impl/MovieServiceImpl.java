@@ -132,6 +132,7 @@ public class MovieServiceImpl implements MovieService {
                 );
     }
 
+    //projection
     @Override
     public Flux<ActorResponseDto> getMovieReviews(String movieId) {
         return null;
