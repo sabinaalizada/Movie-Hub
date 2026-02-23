@@ -5,6 +5,8 @@ import com.ecommerce.reactivemoviehub.dto.request.actor.ActorUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.ActorResponseDto;
 import com.ecommerce.reactivemoviehub.mapper.ActorMapper;
 import com.ecommerce.reactivemoviehub.repository.ActorRepo;
+import com.ecommerce.reactivemoviehub.repository.MovieRepo;
+import com.ecommerce.reactivemoviehub.repository.projection.MovieProjection;
 import com.ecommerce.reactivemoviehub.service.ActorService;
 import com.mongodb.DuplicateKeyException;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import reactor.core.publisher.Mono;
 public class ActorServiceImpl implements ActorService {
     private final ActorRepo actorRepo;
     private final ActorMapper actorMapper;
+    private final MovieRepo movieRepo;
 
     @Override
     public Mono<ActorResponseDto> createActor(ActorRequestDto actorRequestDto) {
@@ -67,7 +70,10 @@ public class ActorServiceImpl implements ActorService {
 
     //projection
     @Override
-    public Flux<ActorResponseDto> getActorMovies(String actorId) {
-        return null;
+    public Flux<MovieProjection> getActorMovies(String actorId) {
+        return actorRepo.findById(actorId)
+                .switchIfEmpty(Mono.error
+                        (new RuntimeException("Actor doesn't exist")))
+                .flatMapMany(actor -> movieRepo.findByActorIdContaining(actorId));
     }
 }

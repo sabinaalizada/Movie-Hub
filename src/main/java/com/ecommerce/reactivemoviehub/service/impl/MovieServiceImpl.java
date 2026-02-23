@@ -10,6 +10,9 @@ import com.ecommerce.reactivemoviehub.mapper.ActorMapper;
 import com.ecommerce.reactivemoviehub.mapper.MovieMapper;
 import com.ecommerce.reactivemoviehub.repository.ActorRepo;
 import com.ecommerce.reactivemoviehub.repository.MovieRepo;
+import com.ecommerce.reactivemoviehub.repository.ReviewRepo;
+import com.ecommerce.reactivemoviehub.repository.UserRepo;
+import com.ecommerce.reactivemoviehub.repository.projection.ReviewProjection;
 import com.ecommerce.reactivemoviehub.service.MovieService;
 import com.ecommerce.reactivemoviehub.utility.DuplicateChecker;
 import com.mongodb.DuplicateKeyException;
@@ -29,6 +32,8 @@ public class MovieServiceImpl implements MovieService {
     private final MovieMapper movieMapper;
     private final ActorRepo actorRepo;
     private final ActorMapper actorMapper;
+    private final ReviewRepo reviewRepo;
+    private final UserRepo userRepo;
 
     @Override
     public Mono<MovieResponseDto> createMovie(MovieRequestDto movieRequestDto) {
@@ -59,33 +64,34 @@ public class MovieServiceImpl implements MovieService {
 
 
     }
-//Not ready
+
+    //Not ready
     @Override
     public Mono<MovieResponseDto> updateMovie(MovieUpdateDto movieUpdateDto, String id) {
         return movieRepo.findById(id)
                 .switchIfEmpty(Mono.error(
                         new RuntimeException("Movie not found")))
-                .flatMap(existingMovie->{
-                    movieMapper.updateMovie(movieUpdateDto,existingMovie);
+                .flatMap(existingMovie -> {
+                    movieMapper.updateMovie(movieUpdateDto, existingMovie);
 
                     Mono<List<Actor>> actors;
-                    if(movieUpdateDto.getActorId()!=null) {
-                        actors=Flux.fromIterable(movieUpdateDto.getActorId())
+                    if (movieUpdateDto.getActorId() != null) {
+                        actors = Flux.fromIterable(movieUpdateDto.getActorId())
                                 .flatMap(actorRepo::findById)
                                 .switchIfEmpty(Mono.error(
                                         new RuntimeException("Actor not found")
                                 ))
                                 .collectList();
-                    }else {
+                    } else {
 
-                        actors= Flux.fromIterable(existingMovie.getActorId())
+                        actors = Flux.fromIterable(existingMovie.getActorId())
                                 .flatMap(actorRepo::findById)
                                 .collectList();
                     }
                     return actors
-                            .flatMap(response->
+                            .flatMap(response ->
                                     movieRepo.save(existingMovie)
-                            .map(movie -> movieMapper.toMovieResponseDto(movie,response)));
+                                            .map(movie -> movieMapper.toMovieResponseDto(movie, response)));
                 });
     }
 
@@ -132,9 +138,19 @@ public class MovieServiceImpl implements MovieService {
                 );
     }
 
-    //projection
     @Override
-    public Flux<ActorResponseDto> getMovieReviews(String movieId) {
-        return null;
+    public Flux<ReviewProjection> getMovieReviews(String movieId) {
+        return movieRepo.findById(movieId)
+                .switchIfEmpty(Mono.error(
+                        new RuntimeException("Movie not found")))
+                .flatMapMany(movie ->
+                        reviewRepo.findAllByMovieId(movieId)
+                                .flatMap(review ->
+                                        userRepo.findById(review.getUserId())
+                                                .map(user -> new ReviewProjection(
+                                                        review.getComment(),
+                                                        review.getRating(),
+                                                        user.getName()
+                                                ))));
     }
 }

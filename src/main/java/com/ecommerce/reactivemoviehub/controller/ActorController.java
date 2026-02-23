@@ -3,6 +3,7 @@ package com.ecommerce.reactivemoviehub.controller;
 import com.ecommerce.reactivemoviehub.dto.request.actor.ActorRequestDto;
 import com.ecommerce.reactivemoviehub.dto.request.actor.ActorUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.ActorResponseDto;
+import com.ecommerce.reactivemoviehub.repository.projection.MovieProjection;
 import com.ecommerce.reactivemoviehub.service.ActorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +65,7 @@ public class ActorController {
     }
 
     @GetMapping("/{id}/movies")
-    public Flux<ResponseEntity<ActorResponseDto>> getActorMovies(@PathVariable String id) {
+    public Flux<ResponseEntity<MovieProjection>> getActorMovies(@PathVariable String id) {
         return actorService.getActorMovies(id)
                 .map(result ->
                         ResponseEntity

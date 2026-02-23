@@ -5,6 +5,7 @@ import com.ecommerce.reactivemoviehub.dto.request.movie.MovieRequestDto;
 import com.ecommerce.reactivemoviehub.dto.request.movie.MovieUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.ActorResponseDto;
 import com.ecommerce.reactivemoviehub.dto.response.MovieResponseDto;
+import com.ecommerce.reactivemoviehub.repository.projection.ReviewProjection;
 import com.ecommerce.reactivemoviehub.service.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -77,7 +78,7 @@ public class MovieController {
     }
 
     @GetMapping("/{id}/reviews")
-    public Flux<ResponseEntity<ActorResponseDto>> getMovieReviews(
+    public Flux<ResponseEntity<ReviewProjection>> getMovieReviews(
             @PathVariable String id) {
         return movieService.getMovieReviews(id)
                 .map(result ->

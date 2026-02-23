@@ -4,6 +4,7 @@ import com.ecommerce.reactivemoviehub.dto.request.movie.MovieRequestDto;
 import com.ecommerce.reactivemoviehub.dto.request.movie.MovieUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.ActorResponseDto;
 import com.ecommerce.reactivemoviehub.dto.response.MovieResponseDto;
+import com.ecommerce.reactivemoviehub.repository.projection.ReviewProjection;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -20,6 +21,6 @@ public interface MovieService {
 
     Flux<ActorResponseDto> getMovieActors(String movieId);
 
-    Flux<ActorResponseDto> getMovieReviews(String movieId);
+    Flux<ReviewProjection> getMovieReviews(String movieId);
 
 }
