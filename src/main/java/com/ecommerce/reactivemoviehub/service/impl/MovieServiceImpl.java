@@ -18,6 +18,7 @@ import com.ecommerce.reactivemoviehub.utility.DuplicateChecker;
 import com.mongodb.DuplicateKeyException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -58,14 +59,21 @@ public class MovieServiceImpl implements MovieService {
                             .onErrorMap(DuplicateKeyException.class,
                                     error ->
                                             new RuntimeException(error.getMessage()))
-                            .map(m ->
-                                    movieMapper.toMovieResponseDto(m, actors));
+                            .flatMap(m ->
+                                    getMovieReviews(m.getId())
+                                            .collectList()
+                                            .map(reviewProjections -> {
+                                                MovieResponseDto responseDto = movieMapper.toMovieResponseDto(movie, actors);
+                                                responseDto.setReviews(reviewProjections);
+                                                return responseDto;
+                                            })
+                            );
                 });
 
 
     }
 
-    //Not ready
+    @Transactional
     @Override
     public Mono<MovieResponseDto> updateMovie(MovieUpdateDto movieUpdateDto, String id) {
         return movieRepo.findById(id)
@@ -77,10 +85,12 @@ public class MovieServiceImpl implements MovieService {
                     Mono<List<Actor>> actors;
                     if (movieUpdateDto.getActorId() != null) {
                         actors = Flux.fromIterable(movieUpdateDto.getActorId())
-                                .flatMap(actorRepo::findById)
-                                .switchIfEmpty(Mono.error(
-                                        new RuntimeException("Actor not found")
-                                ))
+                                .flatMap(actorId ->
+                                        actorRepo.findById(actorId)
+                                                .switchIfEmpty(Mono.error(
+                                                        new RuntimeException("Actor not found")
+                                                )))
+
                                 .collectList();
                     } else {
 
@@ -88,10 +98,32 @@ public class MovieServiceImpl implements MovieService {
                                 .flatMap(actorRepo::findById)
                                 .collectList();
                     }
-                    return actors
-                            .flatMap(response ->
-                                    movieRepo.save(existingMovie)
-                                            .map(movie -> movieMapper.toMovieResponseDto(movie, response)));
+                    return actors.flatMap(actorList -> {
+                        if (existingMovie.getActorId() != null) {
+                            existingMovie.setActorId(
+                                    actorList
+                                            .stream()
+                                            .map(Actor::getId)
+                                            .toList()
+                            );
+                        }
+                        return movieRepo.save(existingMovie)
+                                .onErrorMap(DuplicateKeyException.class,
+                                        error ->
+                                                new RuntimeException(error.getMessage()))
+                                .flatMap(movie ->
+                                        getMovieReviews(movie.getId())
+                                                .collectList()
+                                                .map(reviewProjections -> {
+                                                    MovieResponseDto responseDto =
+                                                            movieMapper.toMovieResponseDto(movie, actorList);
+                                                    responseDto.setReviews(reviewProjections);
+                                                    return responseDto;
+                                                })
+                                );
+
+
+                    });
                 });
     }
 
