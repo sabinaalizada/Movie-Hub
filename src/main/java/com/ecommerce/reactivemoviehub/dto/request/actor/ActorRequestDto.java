@@ -17,18 +17,18 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ActorRequestDto {
     @NotEmpty(message = "Actor name cannot be empty")
-    @Size(max =100, message = "Actor name is too long")
+    @Size(max = 100, message = "Actor name is too long")
     private String firstName;
 
     @NotEmpty(message = "Actor last name cannot be empty")
-    @Size(max =100, message = "Actor last name is too long")
+    @Size(max = 100, message = "Actor last name is too long")
     private String lastName;
 
     @NotNull(message = "Actor birth date cannot be null")
     @Past
     private LocalDate birthDate;
 
-    @Size(max =500, message = "Bio is too long")
+    @Size(max = 500, message = "Bio is too long")
     @NotEmpty(message = "Bio name cannot be empty")
     private String bio;
 }

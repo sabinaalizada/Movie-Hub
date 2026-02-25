@@ -16,6 +16,6 @@ public class YearValidator implements ConstraintValidator<Year, Integer> {
     public boolean isValid(Integer integer, ConstraintValidatorContext constraintValidatorContext) {
         if (integer == null) return false;
         int currentYear = LocalDate.now().getYear();
-        return 1888<=integer && integer<=currentYear;
+        return 1888 <= integer && integer <= currentYear;
     }
 }

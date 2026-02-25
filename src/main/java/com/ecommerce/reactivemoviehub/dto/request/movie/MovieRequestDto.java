@@ -17,7 +17,7 @@ import java.util.List;
 public class MovieRequestDto {
 
     @NotEmpty(message = "Title cannot be empty")
-    @Size(max =100, message = "Title is too long")
+    @Size(max = 100, message = "Title is too long")
     private String title;
 
     @Year

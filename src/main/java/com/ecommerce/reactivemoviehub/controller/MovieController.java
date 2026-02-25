@@ -46,45 +46,29 @@ public class MovieController {
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<MovieResponseDto>> getMovieById(
+    public Mono<MovieResponseDto> getMovieById(
             @PathVariable String id) {
-        return movieService.getMovie(id)
-                .map(result ->
-                        ResponseEntity
-                                .status(HttpStatus.OK)
-                                .body(result));
+        return movieService.getMovie(id);
 
     }
 
     @GetMapping
-    public Flux<ResponseEntity<MovieResponseDto>> getAllMovies() {
-        return movieService.getAllMovies()
-                .map(result ->
-                        ResponseEntity
-                                .status(HttpStatus.OK)
-                                .body(result));
+    public Flux<MovieResponseDto> getAllMovies() {
+        return movieService.getAllMovies();
 
     }
 
     @GetMapping("/{id}/actors")
-    public Flux<ResponseEntity<ActorResponseDto>> getMovieActors(
+    public Flux<ActorResponseDto> getMovieActors(
             @PathVariable String id) {
-        return movieService.getMovieActors(id)
-                .map(result ->
-                        ResponseEntity
-                                .status(HttpStatus.OK)
-                                .body(result));
+        return movieService.getMovieActors(id);
 
     }
 
     @GetMapping("/{id}/reviews")
-    public Flux<ResponseEntity<ReviewProjection>> getMovieReviews(
+    public Flux<ReviewProjection> getMovieReviews(
             @PathVariable String id) {
-        return movieService.getMovieReviews(id)
-                .map(result ->
-                        ResponseEntity
-                                .status(HttpStatus.OK)
-                                .body(result));
+        return movieService.getMovieReviews(id);
 
     }
 

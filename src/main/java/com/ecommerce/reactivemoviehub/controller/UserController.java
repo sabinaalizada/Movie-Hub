@@ -44,23 +44,15 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<UserResponseDto>> getUserById(
+    public Mono<UserResponseDto> getUserById(
             @PathVariable String id) {
-        return userService.getUserById(id)
-                .map(result ->
-                        ResponseEntity
-                                .status(HttpStatus.OK)
-                                .body(result));
+        return userService.getUserById(id);
 
     }
 
     @GetMapping
-    public Flux<ResponseEntity<UserResponseDto>> getAllUsers() {
-        return userService.getAllUsers()
-                .map(result ->
-                        ResponseEntity
-                                .status(HttpStatus.OK)
-                                .body(result));
+    public Flux<UserResponseDto> getAllUsers() {
+        return userService.getAllUsers();
 
     }
 

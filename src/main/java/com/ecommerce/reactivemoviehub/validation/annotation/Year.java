@@ -10,10 +10,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Constraint(validatedBy = YearValidator.class)
-@Target({ ElementType.FIELD })
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Year {
     String message() default "Release year cannot be in the future and before 1988";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

@@ -14,15 +14,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActorUpdateDto {
-    @Size(max =100, message = "Actor name is too long")
+    @Size(max = 100, message = "Actor name is too long")
     private String firstName;
 
-    @Size(max =100, message = "Actor last name is too long")
+    @Size(max = 100, message = "Actor last name is too long")
     private String lastName;
 
     @Past
     private LocalDate birthDate;
 
-    @Size(max =500, message = "Bio is too long")
+    @Size(max = 500, message = "Bio is too long")
     private String bio;
 }

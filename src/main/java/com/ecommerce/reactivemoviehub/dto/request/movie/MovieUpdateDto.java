@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class MovieUpdateDto {
 
-    @Size(max =100, message = "Title is too long")
+    @Size(max = 100, message = "Title is too long")
     private String title;
 
     @Size(max = 500, message = "Description is too long")

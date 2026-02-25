@@ -13,7 +13,7 @@ import lombok.Setter;
 public class ReviewRequestDto {
 
     @NotEmpty(message = "Comment cannot be empty")
-    @Size(max =200, message = "Title is too long")
+    @Size(max = 200, message = "Title is too long")
     private String comment;
 
     @NotNull(message = "Rating is required")

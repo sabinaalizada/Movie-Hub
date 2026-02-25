@@ -9,7 +9,10 @@ import reactor.core.publisher.Mono;
 
 public interface ReviewService {
     Mono<ReviewResponseDto> createReview(ReviewRequestDto reviewRequestDto);
+
     Mono<ReviewResponseDto> updateReview(ReviewUpdateDto reviewUpdateDto, String id);
+
     Mono<Void> deleteReview(String id);
+
     Flux<ReviewResponseDto> getAllReviewsByUserId(String userId);
 }

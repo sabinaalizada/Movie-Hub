@@ -22,7 +22,7 @@ public class ReviewController {
     @PostMapping
     public Mono<ResponseEntity<ReviewResponseDto>> createReview(
             @Valid @RequestBody ReviewRequestDto reviewRequestDto
-            ) {
+    ) {
         return reviewService.createReview(reviewRequestDto)
                 .map(result ->
                         ResponseEntity
@@ -33,7 +33,8 @@ public class ReviewController {
     @PatchMapping("/{id}")
     public Mono<ResponseEntity<ReviewResponseDto>> updateReview(
             @Valid @RequestBody ReviewUpdateDto reviewUpdateDto,
-            @PathVariable String id) {
+            @PathVariable String id
+    ) {
         return reviewService.updateReview(reviewUpdateDto, id)
                 .map(result ->
                         ResponseEntity
@@ -43,12 +44,10 @@ public class ReviewController {
     }
 
     @GetMapping("/user/{userId}")
-    public Flux<ResponseEntity<ReviewResponseDto>> getAllReviewsByUserId(@PathVariable String userId) {
-        return reviewService.getAllReviewsByUserId(userId)
-                .map(result ->
-                        ResponseEntity
-                                .status(HttpStatus.OK)
-                                .body(result));
+    public Flux<ReviewResponseDto> getAllReviewsByUserId(
+            @PathVariable String userId
+    ) {
+        return reviewService.getAllReviewsByUserId(userId);
 
     }
 

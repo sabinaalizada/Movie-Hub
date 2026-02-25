@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewUpdateDto {
-    @Size(max =200, message = "Title is too long")
+    @Size(max = 200, message = "Title is too long")
     private String comment;
 
     @Min(value = 1, message = "Rating must be at least 1")

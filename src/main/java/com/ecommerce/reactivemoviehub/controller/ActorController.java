@@ -44,33 +44,21 @@ public class ActorController {
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<ActorResponseDto>> getActorById(
+    public Mono<ActorResponseDto> getActorById(
             @PathVariable String id) {
-        return actorService.getActor(id)
-                .map(result ->
-                        ResponseEntity
-                                .status(HttpStatus.OK)
-                                .body(result));
+        return actorService.getActor(id);
 
     }
 
     @GetMapping
-    public Flux<ResponseEntity<ActorResponseDto>> getAllActors() {
-        return actorService.getAllActors()
-                .map(result ->
-                        ResponseEntity
-                                .status(HttpStatus.OK)
-                                .body(result));
+    public Flux<ActorResponseDto> getAllActors() {
+        return actorService.getAllActors();
 
     }
 
     @GetMapping("/{id}/movies")
-    public Flux<ResponseEntity<MovieProjection>> getActorMovies(@PathVariable String id) {
-        return actorService.getActorMovies(id)
-                .map(result ->
-                        ResponseEntity
-                                .status(HttpStatus.OK)
-                                .body(result));
+    public Flux<MovieProjection> getActorMovies(@PathVariable String id) {
+        return actorService.getActorMovies(id);
 
     }
 
