@@ -5,3 +5,8 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
+
+  elasticsearch:
+    uris: http://localhost:9200
+    username: ""
+    password: ""
