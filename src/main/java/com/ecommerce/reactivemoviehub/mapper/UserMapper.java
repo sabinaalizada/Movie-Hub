@@ -4,7 +4,7 @@ package com.ecommerce.reactivemoviehub.mapper;
 import com.ecommerce.reactivemoviehub.dto.request.user.UserRequestDto;
 import com.ecommerce.reactivemoviehub.dto.request.user.UserUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.UserResponseDto;
-import com.ecommerce.reactivemoviehub.entity.User;
+import com.ecommerce.reactivemoviehub.entity.mongo.User;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)

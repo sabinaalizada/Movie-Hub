@@ -3,7 +3,7 @@ package com.ecommerce.reactivemoviehub.mapper;
 import com.ecommerce.reactivemoviehub.dto.request.review.ReviewRequestDto;
 import com.ecommerce.reactivemoviehub.dto.request.review.ReviewUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.ReviewResponseDto;
-import com.ecommerce.reactivemoviehub.entity.Review;
+import com.ecommerce.reactivemoviehub.entity.mongo.Review;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)

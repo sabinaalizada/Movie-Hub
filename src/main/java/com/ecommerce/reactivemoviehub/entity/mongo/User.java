@@ -1,4 +1,4 @@
-package com.ecommerce.reactivemoviehub.entity;
+package com.ecommerce.reactivemoviehub.entity.mongo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

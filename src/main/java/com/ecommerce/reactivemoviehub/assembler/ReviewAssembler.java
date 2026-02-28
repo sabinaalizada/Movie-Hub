@@ -1,12 +1,12 @@
 package com.ecommerce.reactivemoviehub.assembler;
 
 import com.ecommerce.reactivemoviehub.dto.response.ReviewResponseDto;
-import com.ecommerce.reactivemoviehub.entity.Movie;
-import com.ecommerce.reactivemoviehub.entity.Review;
-import com.ecommerce.reactivemoviehub.entity.User;
+import com.ecommerce.reactivemoviehub.entity.mongo.Movie;
+import com.ecommerce.reactivemoviehub.entity.mongo.Review;
+import com.ecommerce.reactivemoviehub.entity.mongo.User;
 import com.ecommerce.reactivemoviehub.mapper.ReviewMapper;
-import com.ecommerce.reactivemoviehub.repository.MovieRepo;
-import com.ecommerce.reactivemoviehub.repository.UserRepo;
+import com.ecommerce.reactivemoviehub.repository.mongo.MovieRepo;
+import com.ecommerce.reactivemoviehub.repository.mongo.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;

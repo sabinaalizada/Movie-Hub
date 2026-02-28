@@ -22,5 +22,4 @@ public interface MovieService {
     Flux<ActorResponseDto> getMovieActors(String movieId);
 
     Flux<ReviewProjection> getMovieReviews(String movieId);
-
 }

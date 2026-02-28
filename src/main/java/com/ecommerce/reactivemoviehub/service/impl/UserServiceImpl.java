@@ -4,7 +4,7 @@ import com.ecommerce.reactivemoviehub.dto.request.user.UserRequestDto;
 import com.ecommerce.reactivemoviehub.dto.request.user.UserUpdateDto;
 import com.ecommerce.reactivemoviehub.dto.response.UserResponseDto;
 import com.ecommerce.reactivemoviehub.mapper.UserMapper;
-import com.ecommerce.reactivemoviehub.repository.UserRepo;
+import com.ecommerce.reactivemoviehub.repository.mongo.UserRepo;
 import com.ecommerce.reactivemoviehub.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
