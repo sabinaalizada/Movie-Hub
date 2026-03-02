@@ -1,0 +1,5 @@
+  spring:
+    data:
+      mongodb:
+        uri: mongodb://admin:admin@localhost:27017/moviehub?authSource=admin
+        auto-index-creation: true
