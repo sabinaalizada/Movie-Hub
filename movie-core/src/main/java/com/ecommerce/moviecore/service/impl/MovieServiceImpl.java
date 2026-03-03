@@ -185,4 +185,21 @@ public class MovieServiceImpl implements MovieService {
                                                         user.getName()
                                                 ))));
     }
+
+    private Mono<MovieResponseDto> getMono(Movie existingMovie, List<Actor> actorList) {
+        return movieRepo.save(existingMovie)
+                .onErrorMap(DuplicateKeyException.class,
+                        error ->
+                                new RuntimeException(error.getMessage()))
+                .flatMap(movie ->
+                        getMovieReviews(movie.getId())
+                                .collectList()
+                                .map(reviewProjections -> {
+                                    MovieResponseDto responseDto =
+                                            movieMapper.toMovieResponseDto(movie, actorList);
+                                    responseDto.setReviews(reviewProjections);
+                                    return responseDto;
+                                })
+                );
+    }
 }
