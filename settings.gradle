@@ -1,4 +1,5 @@
 rootProject.name = 'ReactiveMovieHub'
 include 'movie-core'
 include 'movie-api'
+include 'movie-kafka'
 include 'application'
