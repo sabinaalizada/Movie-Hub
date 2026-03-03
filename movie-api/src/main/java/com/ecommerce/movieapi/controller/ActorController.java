@@ -34,7 +34,7 @@ public class ActorController {
     @PatchMapping("/{id}")
     public Mono<ResponseEntity<ActorResponseDto>> updateActor(
             @Valid @RequestBody ActorUpdateDto actorUpdateDto,
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         return actorService.updateActor(actorUpdateDto, id)
                 .map(result ->
                         ResponseEntity
@@ -45,7 +45,7 @@ public class ActorController {
 
     @GetMapping("/{id}")
     public Mono<ActorResponseDto> getActorById(
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         return actorService.getActor(id);
 
     }
@@ -57,14 +57,14 @@ public class ActorController {
     }
 
     @GetMapping("/{id}/movies")
-    public Flux<MovieProjection> getActorMovies(@PathVariable String id) {
+    public Flux<MovieProjection> getActorMovies(@PathVariable("id") String id) {
         return actorService.getActorMovies(id);
 
     }
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteActorById(
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         return actorService.deleteActor(id)
                 .then(Mono.just(ResponseEntity.noContent().build()));
 

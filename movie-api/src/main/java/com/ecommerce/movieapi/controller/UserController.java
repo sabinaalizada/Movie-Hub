@@ -34,7 +34,7 @@ public class UserController {
     @PatchMapping("/{id}")
     public Mono<ResponseEntity<UserResponseDto>> updateUser(
             @Valid @RequestBody UserUpdateDto userUpdateDto,
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         return userService.updateUser(userUpdateDto, id)
                 .map(result ->
                         ResponseEntity
@@ -45,7 +45,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public Mono<UserResponseDto> getUserById(
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         return userService.getUserById(id);
 
     }
@@ -58,7 +58,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteUserById(
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         return userService.deleteUserById(id)
                 .then(Mono.just(ResponseEntity.noContent().build()));
 

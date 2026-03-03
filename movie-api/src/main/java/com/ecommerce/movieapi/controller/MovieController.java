@@ -36,7 +36,7 @@ public class MovieController {
     @PatchMapping("/{id}")
     public Mono<ResponseEntity<MovieResponseDto>> updateMovie(
             @Valid @RequestBody MovieUpdateDto movieUpdateDto,
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         return movieService.updateMovie(movieUpdateDto, id)
                 .map(result ->
                         ResponseEntity
@@ -47,7 +47,7 @@ public class MovieController {
 
     @GetMapping("/{id}")
     public Mono<MovieResponseDto> getMovieById(
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         return movieService.getMovie(id);
 
     }
@@ -60,21 +60,21 @@ public class MovieController {
 
     @GetMapping("/{id}/actors")
     public Flux<ActorResponseDto> getMovieActors(
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         return movieService.getMovieActors(id);
 
     }
 
     @GetMapping("/{id}/reviews")
     public Flux<ReviewProjection> getMovieReviews(
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         return movieService.getMovieReviews(id);
 
     }
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteMovie(
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         return movieService.deleteMovie(id)
                 .then(Mono.just(ResponseEntity.noContent().build()));
 

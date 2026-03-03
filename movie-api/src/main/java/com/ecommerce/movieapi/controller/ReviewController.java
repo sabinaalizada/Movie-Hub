@@ -33,7 +33,7 @@ public class ReviewController {
     @PatchMapping("/{id}")
     public Mono<ResponseEntity<ReviewResponseDto>> updateReview(
             @Valid @RequestBody ReviewUpdateDto reviewUpdateDto,
-            @PathVariable String id
+            @PathVariable("id") String id
     ) {
         return reviewService.updateReview(reviewUpdateDto, id)
                 .map(result ->
@@ -45,7 +45,7 @@ public class ReviewController {
 
     @GetMapping("/user/{userId}")
     public Flux<ReviewResponseDto> getAllReviewsByUserId(
-            @PathVariable String userId
+            @PathVariable("id") String userId
     ) {
         return reviewService.getAllReviewsByUserId(userId);
 
@@ -53,7 +53,7 @@ public class ReviewController {
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteReview(
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         return reviewService.deleteReview(id)
                 .then(Mono.just(ResponseEntity.noContent().build()));
 
