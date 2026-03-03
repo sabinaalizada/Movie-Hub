@@ -55,19 +55,7 @@ public class MovieServiceImpl implements MovieService {
                     );
 
                     Movie movie = movieMapper.toMovie(movieRequestDto, actors);
-                    return movieRepo.save(movie)
-                            .onErrorMap(DuplicateKeyException.class,
-                                    error ->
-                                            new RuntimeException(error.getMessage()))
-                            .flatMap(m ->
-                                    getMovieReviews(m.getId())
-                                            .collectList()
-                                            .map(reviewProjections -> {
-                                                MovieResponseDto responseDto = movieMapper.toMovieResponseDto(movie, actors);
-                                                responseDto.setReviews(reviewProjections);
-                                                return responseDto;
-                                            })
-                            );
+                    return getMono(movie, actors);
                 });
 
 
@@ -107,20 +95,7 @@ public class MovieServiceImpl implements MovieService {
                                             .toList()
                             );
                         }
-                        return movieRepo.save(existingMovie)
-                                .onErrorMap(DuplicateKeyException.class,
-                                        error ->
-                                                new RuntimeException(error.getMessage()))
-                                .flatMap(movie ->
-                                        getMovieReviews(movie.getId())
-                                                .collectList()
-                                                .map(reviewProjections -> {
-                                                    MovieResponseDto responseDto =
-                                                            movieMapper.toMovieResponseDto(movie, actorList);
-                                                    responseDto.setReviews(reviewProjections);
-                                                    return responseDto;
-                                                })
-                                );
+                        return getMono(existingMovie, actorList);
 
 
                     });
@@ -143,9 +118,16 @@ public class MovieServiceImpl implements MovieService {
                 .flatMap(movie ->
                         actorRepo.findAllByIdIn(movie.getActorId())
                                 .collectList()
-                                .map(actors ->
-                                        movieMapper.toMovieResponseDto(movie, actors))
-                );
+                                .flatMap(actors ->
+                                        getMovieReviews(movie.getId())
+                                                .collectList()
+                                                .map(reviewProjections -> {
+                                                    MovieResponseDto responseDto =
+                                                            movieMapper.toMovieResponseDto(movie, actors);
+                                                    responseDto.setReviews(reviewProjections);
+                                                    return responseDto;
+                                                })
+                                ));
     }
 
     @Override
@@ -154,9 +136,17 @@ public class MovieServiceImpl implements MovieService {
                 .flatMap(movie ->
                         actorRepo.findAllByIdIn(movie.getActorId())
                                 .collectList()
-                                .map(actors ->
-                                        movieMapper.toMovieResponseDto(movie, actors))
-                );
+                                .flatMap(actors ->
+                                        getMovieReviews(movie.getId())
+                                                .collectList()
+                                                .map(reviewProjections -> {
+                                                    MovieResponseDto responseDto =
+                                                            movieMapper.toMovieResponseDto(movie, actors);
+                                                    responseDto.setReviews(reviewProjections);
+                                                    return responseDto;
+                                                })
+                                ));
+
     }
 
     @Override

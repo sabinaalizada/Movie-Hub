@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewProjection {
-    private String Comment;
-    private Integer Rating;
-    private String ReviewerName;
+    private String comment;
+    private Integer rating;
+    private String reviewerName;
 }
