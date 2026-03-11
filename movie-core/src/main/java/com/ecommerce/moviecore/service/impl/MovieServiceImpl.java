@@ -15,6 +15,7 @@ import com.ecommerce.moviecore.repository.mongo.UserRepo;
 import com.ecommerce.moviecore.repository.projection.ReviewProjection;
 import com.ecommerce.moviecore.service.MovieService;
 import com.ecommerce.moviecore.utility.DuplicateChecker;
+import com.ecommerce.moviekafka.producer.KafkaProducer;
 import com.mongodb.DuplicateKeyException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class MovieServiceImpl implements MovieService {
     private final ActorMapper actorMapper;
     private final ReviewRepo reviewRepo;
     private final UserRepo userRepo;
+    private final KafkaProducer kafkaProducer;
 
     @Override
     public Mono<MovieResponseDto> createMovie(MovieRequestDto movieRequestDto) {
