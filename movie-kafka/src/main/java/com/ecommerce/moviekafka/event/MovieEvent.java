@@ -1,5 +1,6 @@
 package com.ecommerce.moviekafka.event;
 
+import com.ecommerce.moviekafka.enums.MovieEventType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +13,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MovieEvent {
-    private String movieId;
-    private MovieEvent movieEvent;
+    private String id;
+    private MovieEventType movieEvent;
     private String title;
     private String description;
     private String genre;
-    private LocalDateTime localDateTime;
+    private int releaseYear;
+    private LocalDateTime createdAt;
 }

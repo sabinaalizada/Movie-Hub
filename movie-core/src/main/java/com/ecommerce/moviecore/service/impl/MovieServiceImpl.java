@@ -15,6 +15,8 @@ import com.ecommerce.moviecore.repository.mongo.UserRepo;
 import com.ecommerce.moviecore.repository.projection.ReviewProjection;
 import com.ecommerce.moviecore.service.MovieService;
 import com.ecommerce.moviecore.utility.DuplicateChecker;
+import com.ecommerce.moviekafka.enums.MovieEventType;
+import com.ecommerce.moviekafka.event.MovieEvent;
 import com.ecommerce.moviekafka.producer.KafkaProducer;
 import com.mongodb.DuplicateKeyException;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +59,7 @@ public class MovieServiceImpl implements MovieService {
                     );
 
                     Movie movie = movieMapper.toMovie(movieRequestDto, actors);
-                    return getMono(movie, actors);
+                    return getMono(movie, actors, MovieEventType.CREATED);
                 });
 
 
@@ -97,7 +99,7 @@ public class MovieServiceImpl implements MovieService {
                                             .toList()
                             );
                         }
-                        return getMono(existingMovie, actorList);
+                        return getMono(existingMovie, actorList, MovieEventType.UPDATED);
 
 
                     });
@@ -109,7 +111,12 @@ public class MovieServiceImpl implements MovieService {
         return movieRepo.findById(id)
                 .switchIfEmpty(Mono.error(
                         new RuntimeException("Movie not found")))
-                .flatMap(movieRepo::delete);
+                .flatMap(movie -> {
+                    MovieEvent event = movieMapper.toMovieEvent(movie);
+                    event.setMovieEvent(MovieEventType.DELETED);
+                    kafkaProducer.sendMovieEvent(event);
+                    return movieRepo.delete(movie);
+                });
     }
 
     @Override
@@ -178,20 +185,27 @@ public class MovieServiceImpl implements MovieService {
                                                 ))));
     }
 
-    private Mono<MovieResponseDto> getMono(Movie existingMovie, List<Actor> actorList) {
+    private Mono<MovieResponseDto> getMono(Movie existingMovie, List<Actor> actorList, MovieEventType eventType) {
         return movieRepo.save(existingMovie)
                 .onErrorMap(DuplicateKeyException.class,
                         error ->
                                 new RuntimeException(error.getMessage()))
-                .flatMap(movie ->
-                        getMovieReviews(movie.getId())
-                                .collectList()
-                                .map(reviewProjections -> {
-                                    MovieResponseDto responseDto =
-                                            movieMapper.toMovieResponseDto(movie, actorList);
-                                    responseDto.setReviews(reviewProjections);
-                                    return responseDto;
-                                })
+                .flatMap(movie -> {
+
+                            MovieEvent event = movieMapper.toMovieEvent(movie);
+                            event.setMovieEvent(eventType);
+                            kafkaProducer.sendMovieEvent(event);
+
+                            return getMovieReviews(movie.getId())
+                                    .collectList()
+                                    .map(reviewProjections -> {
+                                        MovieResponseDto responseDto =
+                                                movieMapper.toMovieResponseDto(movie, actorList);
+                                        responseDto.setReviews(reviewProjections);
+                                        return responseDto;
+                                    });
+                        }
+
                 );
     }
 }

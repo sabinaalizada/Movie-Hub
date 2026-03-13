@@ -6,6 +6,7 @@ import com.ecommerce.moviecore.dto.response.MovieResponseDto;
 import com.ecommerce.moviecore.entity.Actor;
 import com.ecommerce.moviecore.entity.Movie;
 import com.ecommerce.moviecore.mapper.ActorMapper;
+import com.ecommerce.moviekafka.event.MovieEvent;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -21,6 +22,8 @@ public interface MovieMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateMovie(MovieUpdateDto movieUpdateDto, @MappingTarget Movie movie);
+
+    MovieEvent toMovieEvent(Movie movie);
 
     @Named("mapActorsToIds")
     default List<String> mapToActorsIds(List<Actor> actors) {
