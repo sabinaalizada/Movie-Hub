@@ -17,6 +17,7 @@ repositories {
 }
 
 dependencies {
+    implementation project(':movie-core')
     implementation 'tools.jackson.core:jackson-core'
     implementation 'tools.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'

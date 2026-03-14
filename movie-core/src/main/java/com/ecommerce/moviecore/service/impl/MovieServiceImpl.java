@@ -6,6 +6,9 @@ import com.ecommerce.moviecore.dto.response.ActorResponseDto;
 import com.ecommerce.moviecore.dto.response.MovieResponseDto;
 import com.ecommerce.moviecore.entity.Actor;
 import com.ecommerce.moviecore.entity.Movie;
+import com.ecommerce.moviecore.enums.MovieEventType;
+import com.ecommerce.moviecore.event.MovieEvent;
+import com.ecommerce.moviecore.event.MovieEventProducer;
 import com.ecommerce.moviecore.mapper.ActorMapper;
 import com.ecommerce.moviecore.mapper.MovieMapper;
 import com.ecommerce.moviecore.repository.mongo.ActorRepo;
@@ -15,9 +18,6 @@ import com.ecommerce.moviecore.repository.mongo.UserRepo;
 import com.ecommerce.moviecore.repository.projection.ReviewProjection;
 import com.ecommerce.moviecore.service.MovieService;
 import com.ecommerce.moviecore.utility.DuplicateChecker;
-import com.ecommerce.moviekafka.enums.MovieEventType;
-import com.ecommerce.moviekafka.event.MovieEvent;
-import com.ecommerce.moviekafka.producer.KafkaProducer;
 import com.mongodb.DuplicateKeyException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,7 @@ public class MovieServiceImpl implements MovieService {
     private final ActorMapper actorMapper;
     private final ReviewRepo reviewRepo;
     private final UserRepo userRepo;
-    private final KafkaProducer kafkaProducer;
+    private final MovieEventProducer movieEventProducer;
 
     @Override
     public Mono<MovieResponseDto> createMovie(MovieRequestDto movieRequestDto) {
@@ -114,7 +114,7 @@ public class MovieServiceImpl implements MovieService {
                 .flatMap(movie -> {
                     MovieEvent event = movieMapper.toMovieEvent(movie);
                     event.setMovieEvent(MovieEventType.DELETED);
-                    kafkaProducer.sendMovieEvent(event);
+                    movieEventProducer.sendMovieEvent(event);
                     return movieRepo.delete(movie);
                 });
     }
@@ -194,7 +194,7 @@ public class MovieServiceImpl implements MovieService {
 
                             MovieEvent event = movieMapper.toMovieEvent(movie);
                             event.setMovieEvent(eventType);
-                            kafkaProducer.sendMovieEvent(event);
+                            movieEventProducer.sendMovieEvent(event);
 
                             return getMovieReviews(movie.getId())
                                     .collectList()

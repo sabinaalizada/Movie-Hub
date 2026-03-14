@@ -5,8 +5,7 @@ import com.ecommerce.moviecore.dto.request.movie.MovieUpdateDto;
 import com.ecommerce.moviecore.dto.response.MovieResponseDto;
 import com.ecommerce.moviecore.entity.Actor;
 import com.ecommerce.moviecore.entity.Movie;
-import com.ecommerce.moviecore.mapper.ActorMapper;
-import com.ecommerce.moviekafka.event.MovieEvent;
+import com.ecommerce.moviecore.event.MovieEvent;
 import org.mapstruct.*;
 
 import java.util.List;

@@ -21,9 +21,15 @@ repositories {
 dependencies {
     implementation project(':movie-core')
     implementation project(':movie-kafka')
-
+    implementation project(':movie-elastic')
+    implementation "org.mapstruct:mapstruct:$mapstruct_version"
+    annotationProcessor "org.mapstruct:mapstruct-processor:$mapstruct_version"
+    implementation 'tools.jackson.core:jackson-core'
+    implementation 'tools.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations'
+    implementation 'io.projectreactor:reactor-core'
     implementation 'org.springframework.kafka:spring-kafka'
-
+    implementation 'co.elastic.clients:elasticsearch-java:8.12.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 }
 

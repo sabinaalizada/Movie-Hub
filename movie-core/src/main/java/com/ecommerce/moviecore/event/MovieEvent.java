@@ -1,6 +1,6 @@
-package com.ecommerce.moviekafka.event;
+package com.ecommerce.moviecore.event;
 
-import com.ecommerce.moviekafka.enums.MovieEventType;
+import com.ecommerce.moviecore.enums.MovieEventType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

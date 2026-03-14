@@ -1,6 +1,6 @@
 package com.ecommerce.moviekafka.config;
 
-import com.ecommerce.moviekafka.event.MovieEvent;
+import com.ecommerce.moviecore.event.MovieEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

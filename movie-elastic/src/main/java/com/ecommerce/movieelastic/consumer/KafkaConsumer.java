@@ -1,4 +1,4 @@
-package com.ecommerce.moviekafka.consumer;
+package com.ecommerce.movieelastic.consumer;
 
 import com.ecommerce.moviekafka.event.MovieEvent;
 import lombok.extern.slf4j.Slf4j;
