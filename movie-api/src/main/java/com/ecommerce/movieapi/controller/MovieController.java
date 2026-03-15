@@ -7,6 +7,7 @@ import com.ecommerce.moviecore.dto.response.ActorResponseDto;
 import com.ecommerce.moviecore.dto.response.MovieResponseDto;
 import com.ecommerce.moviecore.repository.projection.ReviewProjection;
 import com.ecommerce.moviecore.service.MovieService;
+import com.ecommerce.movieelastic.service.MovieElasticService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import reactor.core.publisher.Mono;
 public class MovieController {
 
     private final MovieService movieService;
+    private final MovieElasticService movieElasticService;
 
     @PostMapping
     public Mono<ResponseEntity<MovieResponseDto>> createMovie(
@@ -70,6 +72,14 @@ public class MovieController {
             @PathVariable("id") String id) {
         return movieService.getMovieReviews(id);
 
+    }
+
+    @GetMapping("/search/{title}")
+    public Flux<MovieResponseDto> searchMoviesByTitle(
+            @PathVariable("title") String title,
+            @RequestParam(defaultValue = "0") int moviePage,
+            @RequestParam(defaultValue = "10") int movieSize) {
+        return movieElasticService.searchMoviesByTitle(title, moviePage, movieSize);
     }
 
     @DeleteMapping("/{id}")
