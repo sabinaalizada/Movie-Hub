@@ -43,7 +43,7 @@ public class ReviewController {
 
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user/{id}")
     public Flux<ReviewResponseDto> getAllReviewsByUserId(
             @PathVariable("id") String userId
     ) {
