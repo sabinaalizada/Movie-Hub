@@ -1,12 +1,20 @@
 spring:
   mongodb:
-    uri: mongodb://admin:admin@localhost:27017/moviehub?authSource=admin
+    uri: mongodb://admin:admin@localhost:27017/moviehub?authSource=admin&serverSelectionTimeoutMS=10000&socketTimeoutMS=20000
 
+
+  elasticsearch:
+    uris: http://localhost:9200
+    connection-timeout: 10s
+    socket-timeout: 10s
 
 
   data:
     mongodb:
       auto-index-creation: true
+    elasticsearch:
+      repositories:
+        enabled: true
 
 
   kafka:

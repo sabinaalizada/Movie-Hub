@@ -20,16 +20,16 @@ import java.util.List;
 public class MovieElasticServiceImpl implements MovieElasticService {
 
     private final MovieElasticRepo movieElasticRepo;
-    private final MovieElasticMapper movieMapper;
+    private final MovieElasticMapper movieElasticMapper;
     private final MovieService movieService;
 
     @Override
-    public Flux<MovieResponseDto> searchMoviesByTitle(String title, int moviePage, int movieSize, int reviewPage, int reviewSize) {
+    public Flux<MovieResponseDto> searchMoviesByTitle(String title, int moviePage, int movieSize) {
         PageRequest pageRequest = PageRequest.of(moviePage, movieSize);
 
         return movieElasticRepo.findByTitle(title, pageRequest)
                 .flatMap(movieDocument -> {
-                    MovieResponseDto responseDto = movieMapper.toMovieResponseDto(movieDocument);
+                    MovieResponseDto responseDto = movieElasticMapper.toMovieResponseDto(movieDocument);
 
                     Mono<List<ActorResponseDto>> actors = movieService
                             .getMovieActors(movieDocument.getId())

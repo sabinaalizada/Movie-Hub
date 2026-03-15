@@ -13,7 +13,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(indexName = "movies")
+@Document(indexName = "movies", createIndex = false)
 public class MovieDocument {
     @Id
     private String id;
