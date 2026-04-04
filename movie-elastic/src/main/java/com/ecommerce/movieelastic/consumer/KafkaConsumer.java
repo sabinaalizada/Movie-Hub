@@ -26,11 +26,13 @@ public class KafkaConsumer {
 
                 movieElasticRepo.save(document)
                         .doOnSuccess(movieDocument -> log.info("Movie created/updated: {}", movieDocument))
+                        .doOnError(err -> log.error("Failed to save to Elastic: {}", err.getMessage()))
                         .subscribe();
             }
             case DELETED -> {
                 movieElasticRepo.deleteById(message.getId())
                         .doOnSuccess(movieDocument -> log.info("Movie deleted: {}", movieDocument))
+                        .doOnError(err -> log.error("Failed to delete from Elastic: {}", err.getMessage()))
                         .subscribe();
             }
             default -> log.warn("Unknown event type: {}", message.getMovieEvent());

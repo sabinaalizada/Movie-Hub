@@ -17,8 +17,8 @@ public class ElasticsearchConfig extends ReactiveElasticsearchConfiguration {
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()
                 .connectedTo("localhost:9200")
-                .withConnectTimeout(Duration.ofSeconds(10))
-                .withSocketTimeout(Duration.ofSeconds(10))
+                .withConnectTimeout(Duration.ofSeconds(10000))
+                .withSocketTimeout(Duration.ofSeconds(10000))
                 .build();
     }
 }

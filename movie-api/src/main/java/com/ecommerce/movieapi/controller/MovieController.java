@@ -77,8 +77,8 @@ public class MovieController {
     @GetMapping("/search/{title}")
     public Flux<MovieResponseDto> searchMoviesByTitle(
             @PathVariable("title") String title,
-            @RequestParam(defaultValue = "0") int moviePage,
-            @RequestParam(defaultValue = "10") int movieSize) {
+            @RequestParam(name = "moviePage",defaultValue = "0") int moviePage,
+            @RequestParam(name = "movieSize",defaultValue = "10") int movieSize) {
         return movieElasticService.searchMoviesByTitle(title, moviePage, movieSize);
     }
 
