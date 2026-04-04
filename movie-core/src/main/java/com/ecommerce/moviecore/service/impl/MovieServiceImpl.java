@@ -194,16 +194,18 @@ public class MovieServiceImpl implements MovieService {
 
                             MovieEvent event = movieMapper.toMovieEvent(movie);
                             event.setMovieEvent(eventType);
-                            movieEventProducer.sendMovieEvent(event);
+//                            movieEventProducer.sendMovieEvent(event);
 
-                            return getMovieReviews(movie.getId())
-                                    .collectList()
-                                    .map(reviewProjections -> {
-                                        MovieResponseDto responseDto =
-                                                movieMapper.toMovieResponseDto(movie, actorList);
-                                        responseDto.setReviews(reviewProjections);
-                                        return responseDto;
-                                    });
+                            return Mono.fromRunnable(() -> movieEventProducer.sendMovieEvent(event))
+                                    .then(getMovieReviews(movie.getId())
+                                            .collectList()
+                                            .map(reviewProjections -> {
+                                                MovieResponseDto responseDto =
+                                                        movieMapper.toMovieResponseDto(movie, actorList);
+                                                responseDto.setReviews(reviewProjections);
+                                                return responseDto;
+                                            })
+                                    );
                         }
 
                 );

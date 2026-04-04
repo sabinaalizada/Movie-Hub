@@ -30,8 +30,9 @@ public class KafkaConsumer {
                         .subscribe();
             }
             case DELETED -> {
+                String title= message.getTitle();
                 movieElasticRepo.deleteById(message.getId())
-                        .doOnSuccess(movieDocument -> log.info("Movie deleted: {}", movieDocument))
+                        .doOnSuccess(movieDocument -> log.info("Movie deleted: {}", title))
                         .doOnError(err -> log.error("Failed to delete from Elastic: {}", err.getMessage()))
                         .subscribe();
             }
