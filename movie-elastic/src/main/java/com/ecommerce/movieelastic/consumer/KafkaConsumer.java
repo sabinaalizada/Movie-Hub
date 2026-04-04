@@ -25,7 +25,7 @@ public class KafkaConsumer {
                 MovieDocument document = movieElasticMapper.toMovieDocument(message);
 
                 movieElasticRepo.save(document)
-                        .doOnSuccess(movieDocument -> log.info("Movie created/updated: {}", movieDocument))
+                        .doOnSuccess(movieDocument -> log.info("Movie created/updated: {}", movieDocument.getTitle()))
                         .doOnError(err -> log.error("Failed to save to Elastic: {}", err.getMessage()))
                         .subscribe();
             }

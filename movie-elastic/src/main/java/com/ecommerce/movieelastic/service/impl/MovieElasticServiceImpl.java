@@ -4,6 +4,7 @@ import com.ecommerce.moviecore.dto.response.ActorResponseDto;
 import com.ecommerce.moviecore.dto.response.MovieResponseDto;
 import com.ecommerce.moviecore.repository.projection.ReviewProjection;
 import com.ecommerce.moviecore.service.MovieService;
+import com.ecommerce.movieelastic.entity.MovieDocument;
 import com.ecommerce.movieelastic.mapper.MovieElasticMapper;
 import com.ecommerce.movieelastic.repository.MovieElasticRepo;
 import com.ecommerce.movieelastic.service.MovieElasticService;
@@ -54,5 +55,10 @@ public class MovieElasticServiceImpl implements MovieElasticService {
     public Mono<Long> getMovieCount() {
         return movieElasticRepo.count()
                 .doOnSuccess(count -> log.info("Total movies in Elastic: {}", count));
+    }
+
+    @Override
+    public Flux<MovieDocument> findAll() {
+        return movieElasticRepo.findAll();
     }
 }

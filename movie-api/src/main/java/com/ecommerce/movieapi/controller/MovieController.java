@@ -7,6 +7,7 @@ import com.ecommerce.moviecore.dto.response.ActorResponseDto;
 import com.ecommerce.moviecore.dto.response.MovieResponseDto;
 import com.ecommerce.moviecore.repository.projection.ReviewProjection;
 import com.ecommerce.moviecore.service.MovieService;
+import com.ecommerce.movieelastic.entity.MovieDocument;
 import com.ecommerce.movieelastic.service.MovieElasticService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -93,5 +94,10 @@ public class MovieController {
     @GetMapping("/count")
     public Mono<Long> count() {
         return movieElasticService.getMovieCount();
+    }
+
+    @GetMapping("/all")
+    public Flux<MovieDocument> findAll() {
+        return movieElasticService.findAll();
     }
 }
