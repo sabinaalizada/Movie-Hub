@@ -89,4 +89,9 @@ public class MovieController {
                 .then(Mono.just(ResponseEntity.noContent().build()));
 
     }
+
+    @GetMapping("/count")
+    public Mono<Long> count() {
+        return movieElasticService.getMovieCount();
+    }
 }

@@ -8,6 +8,7 @@ import com.ecommerce.movieelastic.mapper.MovieElasticMapper;
 import com.ecommerce.movieelastic.repository.MovieElasticRepo;
 import com.ecommerce.movieelastic.service.MovieElasticService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MovieElasticServiceImpl implements MovieElasticService {
@@ -46,5 +48,11 @@ public class MovieElasticServiceImpl implements MovieElasticService {
                                 return responseDto;
                             });
                 });
+    }
+
+    @Override
+    public Mono<Long> getMovieCount() {
+        return movieElasticRepo.count()
+                .doOnSuccess(count -> log.info("Total movies in Elastic: {}", count));
     }
 }
