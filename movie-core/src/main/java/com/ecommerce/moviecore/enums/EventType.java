@@ -1,6 +1,6 @@
 package com.ecommerce.moviecore.enums;
 
-public enum MovieEventType {
+public enum EventType {
     CREATED,
     UPDATED,
     DELETED

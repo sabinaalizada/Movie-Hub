@@ -3,6 +3,10 @@ package com.ecommerce.moviecore.service.impl;
 import com.ecommerce.moviecore.dto.request.actor.ActorRequestDto;
 import com.ecommerce.moviecore.dto.request.actor.ActorUpdateDto;
 import com.ecommerce.moviecore.dto.response.ActorResponseDto;
+import com.ecommerce.moviecore.entity.Actor;
+import com.ecommerce.moviecore.enums.EventType;
+import com.ecommerce.moviecore.event.actor.ActorEvent;
+import com.ecommerce.moviecore.event.actor.ActorEventProducer;
 import com.ecommerce.moviecore.mapper.ActorMapper;
 import com.ecommerce.moviecore.repository.mongo.ActorRepo;
 import com.ecommerce.moviecore.repository.mongo.MovieRepo;
@@ -20,16 +24,15 @@ public class ActorServiceImpl implements ActorService {
     private final ActorRepo actorRepo;
     private final ActorMapper actorMapper;
     private final MovieRepo movieRepo;
+    private final ActorEventProducer actorEventProducer;
 
     @Override
     public Mono<ActorResponseDto> createActor(ActorRequestDto actorRequestDto) {
         return Mono.just(actorRequestDto)
-                .map(actorMapper::toActor)
-                .flatMap(actorRepo::save)
-                .onErrorMap(DuplicateKeyException.class,
-                        error ->
-                                new RuntimeException(error.getMessage()))
-                .map(actorMapper::toResponseDto);
+                .flatMap(requestDto-> {
+                    Actor actor = actorMapper.toActor(requestDto);
+                    return getMono(actor,EventType.CREATED);
+                });
     }
 
     @Override
@@ -38,12 +41,9 @@ public class ActorServiceImpl implements ActorService {
                 .switchIfEmpty(Mono.error(new RuntimeException("Actor doesn't exist")))
                 .flatMap(actor -> {
                     actorMapper.updateActor(actor, actorUpdateDto);
-                    return actorRepo.save(actor);
-                })
-                .onErrorMap(DuplicateKeyException.class,
-                        error ->
-                                new RuntimeException(error.getMessage()))
-                .map(actorMapper::toResponseDto);
+                    return getMono(actor,EventType.UPDATED);
+
+                });
     }
 
     @Override
@@ -75,5 +75,19 @@ public class ActorServiceImpl implements ActorService {
                 .switchIfEmpty(Mono.error
                         (new RuntimeException("Actor doesn't exist")))
                 .flatMapMany(actor -> movieRepo.findByActorIdContaining(actorId));
+    }
+
+    private Mono<? extends ActorResponseDto> getMono(Actor actor, EventType eventType) {
+        return actorRepo.save(actor)
+                .onErrorMap(DuplicateKeyException.class,
+                        error ->
+                                new RuntimeException(error.getMessage()))
+                .flatMap(actorEntity -> {
+                    ActorEvent actorEvent = actorMapper.toActorEvent(actorEntity);
+                    actorEvent.setActorEvent(eventType);
+
+                    return Mono.fromRunnable(() -> actorEventProducer.sendActorEvent(actorEvent))
+                            .thenReturn(actorMapper.toResponseDto(actorEntity));
+                });
     }
 }

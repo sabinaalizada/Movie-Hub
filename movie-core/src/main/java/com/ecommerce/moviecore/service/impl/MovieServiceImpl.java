@@ -6,9 +6,9 @@ import com.ecommerce.moviecore.dto.response.ActorResponseDto;
 import com.ecommerce.moviecore.dto.response.MovieResponseDto;
 import com.ecommerce.moviecore.entity.Actor;
 import com.ecommerce.moviecore.entity.Movie;
-import com.ecommerce.moviecore.enums.MovieEventType;
-import com.ecommerce.moviecore.event.MovieEvent;
-import com.ecommerce.moviecore.event.MovieEventProducer;
+import com.ecommerce.moviecore.enums.EventType;
+import com.ecommerce.moviecore.event.movie.MovieEvent;
+import com.ecommerce.moviecore.event.movie.MovieEventProducer;
 import com.ecommerce.moviecore.mapper.ActorMapper;
 import com.ecommerce.moviecore.mapper.MovieMapper;
 import com.ecommerce.moviecore.repository.mongo.ActorRepo;
@@ -59,7 +59,7 @@ public class MovieServiceImpl implements MovieService {
                     );
 
                     Movie movie = movieMapper.toMovie(movieRequestDto, actors);
-                    return getMono(movie, actors, MovieEventType.CREATED);
+                    return getMono(movie, actors, EventType.CREATED);
                 });
 
 
@@ -99,7 +99,7 @@ public class MovieServiceImpl implements MovieService {
                                             .toList()
                             );
                         }
-                        return getMono(existingMovie, actorList, MovieEventType.UPDATED);
+                        return getMono(existingMovie, actorList, EventType.UPDATED);
 
 
                     });
@@ -113,7 +113,7 @@ public class MovieServiceImpl implements MovieService {
                         new RuntimeException("Movie not found")))
                 .flatMap(movie -> {
                     MovieEvent event = movieMapper.toMovieEvent(movie);
-                    event.setMovieEvent(MovieEventType.DELETED);
+                    event.setMovieEvent(EventType.DELETED);
                     movieEventProducer.sendMovieEvent(event);
                     return movieRepo.delete(movie);
                 });
@@ -185,7 +185,7 @@ public class MovieServiceImpl implements MovieService {
                                                 ))));
     }
 
-    private Mono<MovieResponseDto> getMono(Movie existingMovie, List<Actor> actorList, MovieEventType eventType) {
+    private Mono<MovieResponseDto> getMono(Movie existingMovie, List<Actor> actorList, EventType eventType) {
         return movieRepo.save(existingMovie)
                 .onErrorMap(DuplicateKeyException.class,
                         error ->
@@ -194,7 +194,6 @@ public class MovieServiceImpl implements MovieService {
 
                             MovieEvent event = movieMapper.toMovieEvent(movie);
                             event.setMovieEvent(eventType);
-//                            movieEventProducer.sendMovieEvent(event);
 
                             return Mono.fromRunnable(() -> movieEventProducer.sendMovieEvent(event))
                                     .then(getMovieReviews(movie.getId())

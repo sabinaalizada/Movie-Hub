@@ -1,6 +1,6 @@
 package com.ecommerce.movieelastic.consumer;
 
-import com.ecommerce.moviecore.event.MovieEvent;
+import com.ecommerce.moviecore.event.movie.MovieEvent;
 import com.ecommerce.movieelastic.entity.MovieDocument;
 import com.ecommerce.movieelastic.mapper.MovieElasticMapper;
 import com.ecommerce.movieelastic.repository.MovieElasticRepo;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class KafkaConsumer {
+public class MovieConsumer {
 
     private final MovieElasticMapper movieElasticMapper;
     private final MovieElasticRepo movieElasticRepo;

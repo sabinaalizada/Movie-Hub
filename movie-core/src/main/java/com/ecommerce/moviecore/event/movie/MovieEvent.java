@@ -1,6 +1,6 @@
-package com.ecommerce.moviecore.event;
+package com.ecommerce.moviecore.event.movie;
 
-import com.ecommerce.moviecore.enums.MovieEventType;
+import com.ecommerce.moviecore.enums.EventType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class MovieEvent {
     private String id;
-    private MovieEventType movieEvent;
+    private EventType movieEvent;
     private String title;
     private String description;
     private String genre;
