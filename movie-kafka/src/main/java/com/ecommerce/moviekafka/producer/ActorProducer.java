@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @RequiredArgsConstructor
 public class ActorProducer implements ActorEventProducer {
-    private final KafkaTemplate<String, ActorEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendActorEvent(ActorEvent event) {
         kafkaTemplate.send("actor.events", event.getId(), event);

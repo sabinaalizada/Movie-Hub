@@ -5,6 +5,8 @@ import com.ecommerce.moviecore.dto.request.actor.ActorUpdateDto;
 import com.ecommerce.moviecore.dto.response.ActorResponseDto;
 import com.ecommerce.moviecore.repository.projection.MovieProjection;
 import com.ecommerce.moviecore.service.ActorService;
+import com.ecommerce.movieelastic.entity.ActorDocument;
+import com.ecommerce.movieelastic.service.ActorElasticService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import reactor.core.publisher.Mono;
 public class ActorController {
 
     private final ActorService actorService;
+    private final ActorElasticService actorElasticService;
 
     @PostMapping
     public Mono<ResponseEntity<ActorResponseDto>> createActor(
@@ -68,5 +71,18 @@ public class ActorController {
         return actorService.deleteActor(id)
                 .then(Mono.just(ResponseEntity.noContent().build()));
 
+    }
+
+    @GetMapping("/search")
+    public Flux<ActorResponseDto> searchActorByFirstName(
+            @RequestParam(name = "firstName") String firstName,
+            @RequestParam(name = "actorPage",defaultValue = "0") int actorPage,
+            @RequestParam(name = "actorSize",defaultValue = "10") int actorSize) {
+        return actorElasticService.findActorsByFirstName(firstName, actorPage, actorSize);
+    }
+
+    @GetMapping("/all")
+    public Flux<ActorDocument> findAll() {
+        return actorElasticService.findAll();
     }
 }
