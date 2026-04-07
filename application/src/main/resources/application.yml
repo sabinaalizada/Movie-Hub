@@ -9,7 +9,7 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
-      uri: mongodb://admin:admin@localhost:27017/moviehub?authSource=admin&serverSelectionTimeoutMS=10000&socketTimeoutMS=20000
+      uri: mongodb://admin:admin@localhost:27017/moviehub?authSource=admin&serverSelectionTimeoutMS=1000000000&socketTimeoutMS=2000000000
 
     elasticsearch:
       repositories:
@@ -28,3 +28,7 @@ spring:
           json:
             trusted:
               packages: "*"
+
+logging:
+  file:
+    name: logs/app.log
