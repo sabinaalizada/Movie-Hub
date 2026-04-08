@@ -19,4 +19,6 @@ public interface ActorService {
     Flux<ActorResponseDto> getAllActors();
 
     Flux<MovieProjection> getActorMovies(String actorId);
+
+//    Mono<Void> deleteAll();
 }

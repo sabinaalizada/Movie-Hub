@@ -185,6 +185,11 @@ public class MovieServiceImpl implements MovieService {
                                                 ))));
     }
 
+//    @Override
+//    public Mono<Void> deleteAll() {
+//        return movieRepo.deleteAll();
+//    }
+
     private Mono<MovieResponseDto> getMono(Movie existingMovie, List<Actor> actorList, EventType eventType) {
         return movieRepo.save(existingMovie)
                 .onErrorMap(DuplicateKeyException.class,

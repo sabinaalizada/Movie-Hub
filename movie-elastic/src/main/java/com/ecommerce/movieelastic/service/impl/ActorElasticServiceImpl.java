@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
@@ -30,4 +31,10 @@ public class ActorElasticServiceImpl implements ActorElasticService {
     public Flux<ActorDocument> findAll() {
         return actorElasticRepo.findAll();
     }
+
+//    @Override
+//    public Mono<Void> deleteAll() {
+//        return actorElasticRepo.deleteAll();
+//
+//    }
 }

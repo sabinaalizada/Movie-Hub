@@ -77,6 +77,11 @@ public class ActorServiceImpl implements ActorService {
                 .flatMapMany(actor -> movieRepo.findByActorIdContaining(actorId));
     }
 
+//    @Override
+//    public Mono<Void> deleteAll() {
+//       return actorRepo.deleteAll();
+//    }
+
     private Mono<? extends ActorResponseDto> getMono(Actor actor, EventType eventType) {
         return actorRepo.save(actor)
                 .onErrorMap(DuplicateKeyException.class,
@@ -90,4 +95,5 @@ public class ActorServiceImpl implements ActorService {
                             .thenReturn(actorMapper.toResponseDto(actorEntity));
                 });
     }
+
 }

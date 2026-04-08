@@ -8,4 +8,6 @@ import java.util.Collection;
 
 public interface ActorRepo extends ReactiveMongoRepository<Actor, String> {
     Flux<Actor> findAllByIdIn(Collection<String> ids);
+
+//    Flux<Actor> findAll();
 }

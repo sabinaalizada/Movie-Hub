@@ -61,4 +61,9 @@ public class MovieElasticServiceImpl implements MovieElasticService {
     public Flux<MovieDocument> findAll() {
         return movieElasticRepo.findAll();
     }
+
+//    @Override
+//    public Mono<Void> deleteAll() {
+//        return movieElasticRepo.deleteAll();
+//    }
 }

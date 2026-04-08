@@ -100,4 +100,14 @@ public class MovieController {
     public Flux<MovieDocument> findAll() {
         return movieElasticService.findAll();
     }
+
+//    @DeleteMapping("/delete-alle")
+//    public Mono<Void> deleteAlle() {
+//        return movieElasticService.deleteAll();
+//    }
+//
+//    @DeleteMapping("/delete-all")
+//    public Mono<Void> deleteAll() {
+//        return movieService.deleteAll();
+//    }
 }

@@ -9,4 +9,6 @@ public interface MovieElasticService {
     Flux<MovieResponseDto> searchMoviesByTitle(String title, int moviePage, int movieSize);
     Mono<Long> getMovieCount();
     Flux<MovieDocument> findAll();
+
+//    Mono<Void> deleteAll();
 }

@@ -85,4 +85,14 @@ public class ActorController {
     public Flux<ActorDocument> findAll() {
         return actorElasticService.findAll();
     }
+
+//    @DeleteMapping("/delete-alle")
+//    public Mono<Void> deleteAlle() {
+//        return actorElasticService.deleteAll();
+//    }
+//
+//    @DeleteMapping("/delete-all")
+//    public Mono<Void> deleteAll() {
+//        return actorService.deleteAll();
+//    }
 }
