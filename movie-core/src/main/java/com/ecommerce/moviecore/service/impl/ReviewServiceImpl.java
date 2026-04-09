@@ -5,6 +5,9 @@ import com.ecommerce.moviecore.dto.request.review.ReviewRequestDto;
 import com.ecommerce.moviecore.dto.request.review.ReviewUpdateDto;
 import com.ecommerce.moviecore.dto.response.ReviewResponseDto;
 import com.ecommerce.moviecore.entity.Review;
+import com.ecommerce.moviecore.exception.movie.MovieNotFoundException;
+import com.ecommerce.moviecore.exception.review.ReviewNotFoundException;
+import com.ecommerce.moviecore.exception.user.UserNotFoundException;
 import com.ecommerce.moviecore.mapper.ReviewMapper;
 import com.ecommerce.moviecore.repository.mongo.MovieRepo;
 import com.ecommerce.moviecore.repository.mongo.ReviewRepo;
@@ -32,10 +35,10 @@ public class ReviewServiceImpl implements ReviewService {
         return Mono.zip(
                         userRepo.findById(reviewRequestDto.getUserId())
                                 .switchIfEmpty(Mono.error(
-                                        new RuntimeException("User not found"))),
+                                        new UserNotFoundException("User not found"))),
                         movieRepo.findById(reviewRequestDto.getMovieId())
                                 .switchIfEmpty(Mono.error(
-                                        new RuntimeException("Movie not found")))
+                                        new MovieNotFoundException("Movie not found")))
                 )
                 .flatMap(tuple -> {
 
@@ -51,7 +54,7 @@ public class ReviewServiceImpl implements ReviewService {
     public Mono<ReviewResponseDto> updateReview(ReviewUpdateDto reviewUpdateDto, String id) {
         return reviewRepo.findById(id)
                 .switchIfEmpty(Mono.error(
-                        new RuntimeException("Review not found")))
+                        new ReviewNotFoundException("Review not found")))
                 .flatMap(review -> {
                     reviewMapper.updateReview(review, reviewUpdateDto);
                     return reviewRepo.save(review);
@@ -63,7 +66,7 @@ public class ReviewServiceImpl implements ReviewService {
     public Flux<ReviewResponseDto> getAllReviewsByUserId(String userId) {
         return userRepo.findById(userId)
                 .switchIfEmpty(Mono.error(
-                new RuntimeException("User not found")))
+                new UserNotFoundException("User not found")))
                 .flatMapMany(user -> reviewRepo.findAllByUserId(user.getId())
                         .flatMap(reviewAssembler::toResponseDto));
     }
@@ -72,7 +75,7 @@ public class ReviewServiceImpl implements ReviewService {
     public Mono<Void> deleteReview(String id) {
         return reviewRepo.findById(id)
                 .switchIfEmpty(Mono.error(
-                        new RuntimeException("Movie not found")))
+                        new MovieNotFoundException("Movie not found")))
                 .flatMap(reviewRepo::delete);
     }
 }

@@ -3,6 +3,9 @@ package com.ecommerce.moviecore.service.impl;
 import com.ecommerce.moviecore.dto.request.user.UserRequestDto;
 import com.ecommerce.moviecore.dto.request.user.UserUpdateDto;
 import com.ecommerce.moviecore.dto.response.UserResponseDto;
+import com.ecommerce.moviecore.exception.user.EmailAlreadyExistException;
+import com.ecommerce.moviecore.exception.user.UserAlreadyExistException;
+import com.ecommerce.moviecore.exception.user.UserNotFoundException;
 import com.ecommerce.moviecore.mapper.UserMapper;
 import com.ecommerce.moviecore.repository.mongo.UserRepo;
 import com.ecommerce.moviecore.service.UserService;
@@ -24,7 +27,7 @@ public class UserServiceImpl implements UserService {
         return userRepo.existsByEmail(userRequestDto.getEmail())
                 .filter(exists -> !exists)
                 .switchIfEmpty(Mono.error(
-                        new RuntimeException("User already exists")
+                        new UserAlreadyExistException("User already exists")
                 ))
                 .map(exist -> userMapper.toUser(userRequestDto))
                 .flatMap(userRepo::save)
@@ -36,14 +39,14 @@ public class UserServiceImpl implements UserService {
     public Mono<UserResponseDto> updateUser(UserUpdateDto userUpdateDto, String id) {
         return userRepo.findById(id)
                 .switchIfEmpty(Mono.error(
-                        new RuntimeException("User already exists")))
+                        new UserAlreadyExistException("User already exists")))
                 .flatMap(user -> {
                     if (userUpdateDto.getEmail() != null) {
                         return userRepo.existsByEmailAndIdNot(userUpdateDto.getEmail(), id)
                                 .flatMap(exists -> {
                                     if (exists) {
                                         return Mono.error(
-                                                new RuntimeException("Email already exists"));
+                                                new EmailAlreadyExistException("Email already exists"));
                                     }
 
                                     userMapper.updateUser(user, userUpdateDto);
@@ -62,7 +65,7 @@ public class UserServiceImpl implements UserService {
     public Mono<UserResponseDto> getUserById(String id) {
         return userRepo.findById(id)
                 .switchIfEmpty(Mono.error(
-                        new RuntimeException("User not found")))
+                        new UserNotFoundException("User not found")))
                 .map(userMapper::toUserResponseDto);
     }
 
@@ -71,7 +74,7 @@ public class UserServiceImpl implements UserService {
     public Mono<Void> deleteUserById(String id) {
         return userRepo.findById(id)
                 .switchIfEmpty(Mono.error(
-                        new RuntimeException("User not found")))
+                        new UserNotFoundException("User not found")))
                 .flatMap(userRepo::delete);
     }
 

@@ -1,5 +1,7 @@
 package com.ecommerce.moviecore.event.movie;
 
+import reactor.core.publisher.Mono;
+
 public interface MovieEventProducer {
-    void sendMovieEvent(MovieEvent event);
+    Mono<Void> sendMovieEvent(MovieEvent event);
 }

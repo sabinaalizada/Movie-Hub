@@ -1,4 +1,4 @@
-package com.ecommerce.moviecore.exception;
+package com.ecommerce.moviecore.exception.actor;
 
 public class ActorNotFoundException extends RuntimeException {
     public ActorNotFoundException(String message) {

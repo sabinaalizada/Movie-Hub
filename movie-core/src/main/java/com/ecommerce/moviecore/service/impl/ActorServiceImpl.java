@@ -7,8 +7,8 @@ import com.ecommerce.moviecore.entity.Actor;
 import com.ecommerce.moviecore.enums.EventType;
 import com.ecommerce.moviecore.event.actor.ActorEvent;
 import com.ecommerce.moviecore.event.actor.ActorEventProducer;
-import com.ecommerce.moviecore.exception.ActorAlreadyExistException;
-import com.ecommerce.moviecore.exception.ActorNotFoundException;
+import com.ecommerce.moviecore.exception.actor.ActorAlreadyExistException;
+import com.ecommerce.moviecore.exception.actor.ActorNotFoundException;
 import com.ecommerce.moviecore.mapper.ActorMapper;
 import com.ecommerce.moviecore.repository.mongo.ActorRepo;
 import com.ecommerce.moviecore.repository.mongo.MovieRepo;
@@ -54,7 +54,12 @@ public class ActorServiceImpl implements ActorService {
         return actorRepo.findById(actorId)
                 .switchIfEmpty(Mono.error
                         (new ActorNotFoundException("Actor doesn't exist")))
-                .flatMap(actorRepo::delete);
+                .flatMap(actor->{
+                    ActorEvent event = actorMapper.toActorEvent(actor);
+                    event.setActorEvent(EventType.DELETED);
+                    return actorEventProducer.sendActorEvent(event)
+                            .then(actorRepo.delete(actor));
+                });
     }
 
     @Override

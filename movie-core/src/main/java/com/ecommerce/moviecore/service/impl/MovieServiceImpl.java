@@ -9,6 +9,9 @@ import com.ecommerce.moviecore.entity.Movie;
 import com.ecommerce.moviecore.enums.EventType;
 import com.ecommerce.moviecore.event.movie.MovieEvent;
 import com.ecommerce.moviecore.event.movie.MovieEventProducer;
+import com.ecommerce.moviecore.exception.actor.ActorNotFoundException;
+import com.ecommerce.moviecore.exception.movie.MovieAlreadyExistException;
+import com.ecommerce.moviecore.exception.movie.MovieNotFoundException;
 import com.ecommerce.moviecore.mapper.ActorMapper;
 import com.ecommerce.moviecore.mapper.MovieMapper;
 import com.ecommerce.moviecore.repository.mongo.ActorRepo;
@@ -46,7 +49,7 @@ public class MovieServiceImpl implements MovieService {
                 .flatMap(actorId ->
                         actorRepo.findById(actorId)
                                 .switchIfEmpty(Mono.error(
-                                        new RuntimeException("Actor not found")
+                                        new ActorNotFoundException("Actor not found")
                                 ))
                 )
                 .collectList()
@@ -70,7 +73,7 @@ public class MovieServiceImpl implements MovieService {
     public Mono<MovieResponseDto> updateMovie(MovieUpdateDto movieUpdateDto, String id) {
         return movieRepo.findById(id)
                 .switchIfEmpty(Mono.error(
-                        new RuntimeException("Movie not found")))
+                        new MovieNotFoundException("Movie not found")))
                 .flatMap(existingMovie -> {
                     movieMapper.updateMovie(movieUpdateDto, existingMovie);
 
@@ -80,7 +83,7 @@ public class MovieServiceImpl implements MovieService {
                                 .flatMap(actorId ->
                                         actorRepo.findById(actorId)
                                                 .switchIfEmpty(Mono.error(
-                                                        new RuntimeException("Actor not found")
+                                                        new ActorNotFoundException("Actor not found")
                                                 )))
 
                                 .collectList();
@@ -110,12 +113,12 @@ public class MovieServiceImpl implements MovieService {
     public Mono<Void> deleteMovie(String id) {
         return movieRepo.findById(id)
                 .switchIfEmpty(Mono.error(
-                        new RuntimeException("Movie not found")))
+                        new MovieNotFoundException("Movie not found")))
                 .flatMap(movie -> {
                     MovieEvent event = movieMapper.toMovieEvent(movie);
                     event.setMovieEvent(EventType.DELETED);
-                    movieEventProducer.sendMovieEvent(event);
-                    return movieRepo.delete(movie);
+                    return movieEventProducer.sendMovieEvent(event)
+                            .then(movieRepo.delete(movie));
                 });
     }
 
@@ -123,7 +126,7 @@ public class MovieServiceImpl implements MovieService {
     public Mono<MovieResponseDto> getMovie(String id) {
         return movieRepo.findById(id)
                 .switchIfEmpty(Mono.error(
-                        new RuntimeException("Movie not found")))
+                        new MovieNotFoundException("Movie not found")))
                 .flatMap(movie ->
                         actorRepo.findAllByIdIn(movie.getActorId())
                                 .collectList()
@@ -162,7 +165,7 @@ public class MovieServiceImpl implements MovieService {
     public Flux<ActorResponseDto> getMovieActors(String movieId) {
         return movieRepo.findById(movieId)
                 .switchIfEmpty(Mono.error(
-                        new RuntimeException("Movie not found")))
+                        new MovieNotFoundException("Movie not found")))
                 .flatMapMany(movie ->
                         actorRepo.findAllByIdIn(movie.getActorId())
                                 .map(actorMapper::toResponseDto)
@@ -173,7 +176,7 @@ public class MovieServiceImpl implements MovieService {
     public Flux<ReviewProjection> getMovieReviews(String movieId) {
         return movieRepo.findById(movieId)
                 .switchIfEmpty(Mono.error(
-                        new RuntimeException("Movie not found")))
+                        new MovieNotFoundException("Movie not found")))
                 .flatMapMany(movie ->
                         reviewRepo.findAllByMovieId(movieId)
                                 .flatMap(review ->
@@ -194,13 +197,13 @@ public class MovieServiceImpl implements MovieService {
         return movieRepo.save(existingMovie)
                 .onErrorMap(DuplicateKeyException.class,
                         error ->
-                                new RuntimeException(error.getMessage()))
+                                new MovieAlreadyExistException("Movie already exist"))
                 .flatMap(movie -> {
 
                             MovieEvent event = movieMapper.toMovieEvent(movie);
                             event.setMovieEvent(eventType);
 
-                            return Mono.fromRunnable(() -> movieEventProducer.sendMovieEvent(event))
+                            return movieEventProducer.sendMovieEvent(event)
                                     .then(getMovieReviews(movie.getId())
                                             .collectList()
                                             .map(reviewProjections -> {
