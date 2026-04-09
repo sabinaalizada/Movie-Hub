@@ -7,6 +7,8 @@ import com.ecommerce.moviecore.entity.Actor;
 import com.ecommerce.moviecore.enums.EventType;
 import com.ecommerce.moviecore.event.actor.ActorEvent;
 import com.ecommerce.moviecore.event.actor.ActorEventProducer;
+import com.ecommerce.moviecore.exception.ActorAlreadyExistException;
+import com.ecommerce.moviecore.exception.ActorNotFoundException;
 import com.ecommerce.moviecore.mapper.ActorMapper;
 import com.ecommerce.moviecore.repository.mongo.ActorRepo;
 import com.ecommerce.moviecore.repository.mongo.MovieRepo;
@@ -38,7 +40,8 @@ public class ActorServiceImpl implements ActorService {
     @Override
     public Mono<ActorResponseDto> updateActor(ActorUpdateDto actorUpdateDto, String actorId) {
         return actorRepo.findById(actorId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Actor doesn't exist")))
+                .switchIfEmpty(Mono.error
+                        (new ActorNotFoundException("Actor doesn't exist")))
                 .flatMap(actor -> {
                     actorMapper.updateActor(actor, actorUpdateDto);
                     return getMono(actor,EventType.UPDATED);
@@ -50,7 +53,7 @@ public class ActorServiceImpl implements ActorService {
     public Mono<Void> deleteActor(String actorId) {
         return actorRepo.findById(actorId)
                 .switchIfEmpty(Mono.error
-                        (new RuntimeException("Actor doesn't exist")))
+                        (new ActorNotFoundException("Actor doesn't exist")))
                 .flatMap(actorRepo::delete);
     }
 
@@ -58,7 +61,7 @@ public class ActorServiceImpl implements ActorService {
     public Mono<ActorResponseDto> getActor(String actorId) {
         return actorRepo.findById(actorId)
                 .switchIfEmpty(Mono.error
-                        (new RuntimeException("Actor doesn't exist")))
+                        (new ActorNotFoundException("Actor doesn't exist")))
                 .map(actorMapper::toResponseDto);
     }
 
@@ -73,7 +76,7 @@ public class ActorServiceImpl implements ActorService {
     public Flux<MovieProjection> getActorMovies(String actorId) {
         return actorRepo.findById(actorId)
                 .switchIfEmpty(Mono.error
-                        (new RuntimeException("Actor doesn't exist")))
+                        (new ActorNotFoundException("Actor doesn't exist")))
                 .flatMapMany(actor -> movieRepo.findByActorIdContaining(actorId));
     }
 
@@ -86,12 +89,12 @@ public class ActorServiceImpl implements ActorService {
         return actorRepo.save(actor)
                 .onErrorMap(DuplicateKeyException.class,
                         error ->
-                                new RuntimeException(error.getMessage()))
+                                new ActorAlreadyExistException(error.getMessage()))
                 .flatMap(actorEntity -> {
                     ActorEvent actorEvent = actorMapper.toActorEvent(actorEntity);
                     actorEvent.setActorEvent(eventType);
 
-                    return Mono.fromRunnable(() -> actorEventProducer.sendActorEvent(actorEvent))
+                    return actorEventProducer.sendActorEvent(actorEvent)
                             .thenReturn(actorMapper.toResponseDto(actorEntity));
                 });
     }

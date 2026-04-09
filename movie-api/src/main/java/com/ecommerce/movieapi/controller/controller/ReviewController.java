@@ -1,4 +1,4 @@
-package com.ecommerce.movieapi.controller;
+package com.ecommerce.movieapi.controller.controller;
 
 import com.ecommerce.moviecore.dto.request.review.ReviewRequestDto;
 import com.ecommerce.moviecore.dto.request.review.ReviewUpdateDto;
